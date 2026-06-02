@@ -37,22 +37,12 @@ export default function SubmitPage() {
 
   const wfFooter = (
     <div className="white-footer" style={{ position: 'relative', zIndex: 1, marginTop: -56 }}>
-      <div className="wf-links">
-        <span className="wf-link">隱私權政策</span>
-        <span className="wf-link">匿名條款</span>
-        <span className="wf-link">聯繫我們</span>
-      </div>
       <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
     </div>
   )
 
   const stdFooter = (
     <footer className="white-footer">
-      <div className="wf-links">
-        <span className="wf-link">隱私權政策</span>
-        <span className="wf-link">匿名條款</span>
-        <span className="wf-link">聯繫我們</span>
-      </div>
       <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
     </footer>
   )

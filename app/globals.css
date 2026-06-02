@@ -72,18 +72,6 @@ body {
   border-top: 1px solid rgba(220,193,177,0.15);
   flex-shrink: 0;
 }
-.wf-links { display: flex; gap: 24px; }
-.wf-link {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  color: var(--brown-light);
-  opacity: 0.7;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  background: none;
-  border: none;
-  text-decoration: none;
-}
 .wf-copy {
   font-family: var(--font-sans);
   font-size: 12px;

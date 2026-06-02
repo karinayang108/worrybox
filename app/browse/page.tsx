@@ -163,27 +163,24 @@ export default async function BrowsePage({ searchParams }: PageProps) {
             </div>
           )}
 
-          {/* Load more */}
-          <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 28 }}>
-            <button style={{
-              background: 'rgba(252,250,242,0.9)',
-              border: '1.5px solid #b8a888', borderRadius: 6,
-              padding: '12px 48px', cursor: 'pointer',
-              fontFamily: 'var(--font-sans)', fontSize: 14,
-              color: 'var(--brown-light)', letterSpacing: '0.03em',
-              backdropFilter: 'blur(4px)',
-            }}>翻閱更多碎紙片...</button>
-          </div>
+          {/* Load more — only show when a full page was returned */}
+          {complaints.length === 12 && (
+            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 28 }}>
+              <button style={{
+                background: 'rgba(252,250,242,0.9)',
+                border: '1.5px solid #b8a888', borderRadius: 6,
+                padding: '12px 48px', cursor: 'pointer',
+                fontFamily: 'var(--font-sans)', fontSize: 14,
+                color: 'var(--brown-light)', letterSpacing: '0.03em',
+                backdropFilter: 'blur(4px)',
+              }}>翻閱更多碎紙片...</button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Footer — outside scroll area, always pinned at bottom */}
       <footer className="white-footer">
-        <div className="wf-links">
-          <span className="wf-link">隱私權政策</span>
-          <span className="wf-link">匿名條款</span>
-          <span className="wf-link">聯繫我們</span>
-        </div>
         <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
       </footer>
     </div>

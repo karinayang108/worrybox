@@ -109,11 +109,6 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="white-footer">
-        <div className="wf-links">
-          <span className="wf-link">隱私權政策</span>
-          <span className="wf-link">匿名條款</span>
-          <span className="wf-link">聯繫我們</span>
-        </div>
         <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間 | 痛點靈感</div>
       </footer>
     </div>
