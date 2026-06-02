@@ -1,26 +1,219 @@
 @import "tailwindcss";
 
+/* ── Design tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-serif: var(--font-noto-serif-tc), 'Noto Serif TC', serif;
+  --font-sans:  var(--font-abeezee), 'ABeeZee', sans-serif;
+
+  --brown-dark:   #4a3320;
+  --brown-mid:    #725a42;
+  --brown-light:  #564337;
+  --orange-cta:   #e67e22;
+  --paper-bg:     #fffef8;
+  --paper-line:   rgba(160,148,128,0.16);
+  --tape-bg:      rgba(233,226,211,0.48);
+  --border-warm:  rgba(220,193,177,0.3);
+  --footer-h:     76px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background: #111;
+}
+
+/* ── Park background ── */
+.park-bg {
+  background:
+    linear-gradient(rgba(25,28,28,0.12), rgba(25,28,28,0.10)),
+    url('/bg.jpg') center / cover no-repeat;
+}
+
+/* ── Site nav ── */
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  flex-shrink: 0;
+}
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px 4px;
+  opacity: 0.88;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  transition: opacity 0.15s;
+}
+.menu-btn:hover { opacity: 1; }
+.site-brand {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ── White footer ── */
+.white-footer {
+  background: #fff;
+  height: var(--footer-h);
+  min-height: var(--footer-h);
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-top: 1px solid rgba(220,193,177,0.15);
+  flex-shrink: 0;
+}
+.wf-links { display: flex; gap: 24px; }
+.wf-link {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--brown-light);
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: none;
+}
+.wf-copy {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: rgba(86,67,55,0.4);
+}
+
+/* ── Paper texture ── */
+.paper-lined {
+  background-color: var(--paper-bg);
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px, var(--paper-line) 28px
+  );
+}
+.paper-shadow {
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.10),
+    0 2px 4px rgba(0,0,0,0.10),
+    0 6px 16px rgba(0,0,0,0.10),
+    0 16px 32px rgba(0,0,0,0.08),
+    inset 0 0 0 1px rgba(200,185,160,0.2);
+}
+.paper-shadow::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 5%; right: 5%; height: 10px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.22) 0%, transparent 70%);
+  filter: blur(4px);
+  z-index: -1;
+}
+
+/* ── Masking tape ── */
+.tape {
+  background: var(--tape-bg);
+  backdrop-filter: blur(2px);
+}
+
+/* ── Typewriter ENTER key ── */
+.tw-key-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #c8a878 0%, #a07848 40%, #7a5830 100%);
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0 5px 0 #4a3018,
+    0 7px 12px rgba(0,0,0,0.55),
+    inset 0 2px 3px rgba(255,255,255,0.18),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #2a1808;
+  line-height: 1.2;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.tw-key-btn:hover {
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 #4a3018, 0 4px 8px rgba(0,0,0,0.45),
+    inset 0 2px 3px rgba(255,255,255,0.18),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+}
+.tw-key-btn:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 0px 0 #4a3018, 0 2px 4px rgba(0,0,0,0.3),
+    inset 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* ── Browse filter pills ── */
+.filter-pill {
+  padding: 6px 20px;
+  border-radius: 6px;
+  border: 1.5px solid #b8a888;
+  background: rgba(252,250,242,0.88);
+  color: var(--brown-light);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(6px);
+}
+.filter-pill.active {
+  background: var(--brown-dark) !important;
+  color: #fff !important;
+  border-color: var(--brown-dark) !important;
+}
+.filter-pill:hover:not(.active) {
+  background: rgba(252,250,242,0.98);
+}
+
+/* ── Worry card (browse) ── */
+.worry-card {
+  background-color: var(--paper-bg);
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px, var(--paper-line) 28px
+  );
+  padding: 20px 20px 16px;
+  cursor: pointer;
+  position: relative;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.14),
+    0 6px 12px rgba(0,0,0,0.13),
+    0 14px 28px rgba(0,0,0,0.10),
+    inset 0 0 0 1px rgba(200,185,160,0.18);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.worry-card::after {
+  content: '';
+  position: absolute;
+  bottom: -7px; left: 8%; right: 8%; height: 10px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.18) 0%, transparent 70%);
+  filter: blur(4px);
+  z-index: -1;
+}
+.worry-card:hover {
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.15),
+    0 12px 24px rgba(0,0,0,0.14),
+    0 24px 48px rgba(0,0,0,0.10),
+    inset 0 0 0 1px rgba(200,185,160,0.18);
+}
+
+/* ── Frosted glass card (landing) ── */
+.glass-card {
+  background: rgba(252,250,242,0.88);
+  border: 1px solid var(--border-warm);
+  box-shadow: 2px 4px 6px rgba(114,90,66,0.15);
+  backdrop-filter: blur(4px);
 }

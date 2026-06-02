@@ -1,0 +1,70 @@
+'use client'
+
+import { useState } from 'react'
+
+interface Props {
+  complaintId: string
+  initialCount: number
+}
+
+export default function ReactionButton({ complaintId, initialCount }: Props) {
+  const [count, setCount] = useState(initialCount)
+  const [reacted, setReacted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleClick() {
+    if (loading) return
+    setLoading(true)
+
+    // Optimistic update
+    const newReacted = !reacted
+    setReacted(newReacted)
+    setCount(c => newReacted ? c + 1 : c - 1)
+
+    try {
+      const res = await fetch('/api/reactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ complaintId }),
+      })
+      const data = await res.json()
+      // Sync with server truth
+      if (data.reacted !== newReacted) {
+        setReacted(data.reacted)
+        setCount(c => data.reacted ? c + 1 : c - 1)
+      }
+    } catch {
+      // Roll back on error
+      setReacted(reacted)
+      setCount(initialCount)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          background: reacted ? 'var(--brown-dark)' : 'rgba(252,250,242,0.9)',
+          border: `1.5px solid ${reacted ? 'var(--brown-dark)' : '#b8a888'}`,
+          borderRadius: 4, padding: '6px 16px',
+          color: reacted ? '#fff' : 'var(--brown-light)',
+          fontFamily: 'var(--font-sans)', fontSize: 13,
+          cursor: loading ? 'default' : 'pointer',
+          transition: 'all 0.15s',
+          letterSpacing: '0.03em',
+        }}
+      >
+        🤍 我也有！
+      </button>
+      <span style={{
+        fontFamily: 'var(--font-sans)',
+        fontSize: 12, color: '#b8a888',
+      }}>{count} 人共鳴</span>
+    </div>
+  )
+}
