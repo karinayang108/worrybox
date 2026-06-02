@@ -59,18 +59,15 @@ export default async function BrowsePage({ searchParams }: PageProps) {
     <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
       {/* Hero — gradient overlay only, no separate background */}
-      <div style={{
-        flexShrink: 0,
-        background: 'linear-gradient(rgba(20,25,20,0.42), rgba(20,25,20,0.52))',
-      }}>
+      <div style={{ flexShrink: 0 }}>
         <NavMenu />
         <div style={{ textAlign: 'center', padding: '20px 32px 28px' }}>
-          <h1 style={{
+          <h1 className="browse-hero-title" style={{
             fontFamily: 'var(--font-serif)',
             fontSize: 40, fontWeight: 700, color: '#fff',
             marginBottom: 8, textShadow: '0 2px 12px rgba(0,0,0,0.3)',
           }}>看看大家在煩什麼</h1>
-          <p style={{
+          <p className="browse-hero-sub" style={{
             fontFamily: 'var(--font-sans)',
             fontSize: 15, color: 'rgba(255,255,255,0.72)',
           }}>在這些碎紙片中，或許你會發現自己並不孤單，或許你也可以找到你的靈感。</p>
@@ -109,12 +106,7 @@ export default async function BrowsePage({ searchParams }: PageProps) {
               這個分類還沒有煩惱，快去投遞第一個吧 🌿
             </div>
           ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: 24, marginBottom: 28,
-              alignItems: 'start',
-            }}>
+            <div className="browse-grid">
               {complaints.map((complaint, i) => (
                 <div
                   key={complaint.id}

@@ -160,6 +160,9 @@ export default function SubmitPage() {
         z-index: 30;
       }
       .paper-jitter { animation: paperJitter 0.18s ease-in-out; }
+      @media (max-width: 640px) {
+        .paper-textarea { min-height: 200px !important; }
+      }
     `}</style>
 
       {/* ── STEP 1 ── */}
@@ -169,12 +172,12 @@ export default function SubmitPage() {
 
           {/* Title */}
           <div style={{ textAlign: 'center', padding: '16px 24px 0', flexShrink: 0 }}>
-            <h1 style={{
+            <h1 className="submit-hero-title" style={{
               fontFamily: 'var(--font-serif)',
               fontSize: 32, fontWeight: 700, color: '#fff',
               textShadow: '0 2px 12px rgba(0,0,0,0.3)', marginBottom: 8,
             }}>說說看，什麼讓你最近很煩？</h1>
-            <p style={{
+            <p className="submit-hero-sub" style={{
               fontFamily: 'var(--font-sans)',
               fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7,
             }}>
@@ -190,7 +193,7 @@ export default function SubmitPage() {
           }}>
 
             {/* ENTER key — bottom right near typewriter */}
-            <div style={{
+            <div className="tw-enter-wrap" style={{
               position: 'absolute',
               right: 'calc(50% - 340px)',
               bottom: 'calc(var(--footer-h) + 8px)',
@@ -215,7 +218,7 @@ export default function SubmitPage() {
             </div>
 
             {/* Typewriter assembly */}
-            <div style={{ maxWidth: 560, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="tw-assembly" style={{ maxWidth: 560, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
               {/* Paper — z-index 4 so it's above the typewriter image */}
               <div
@@ -243,6 +246,7 @@ export default function SubmitPage() {
                   onChange={e => setContent(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="在這裡開始打字..."
+                  className="paper-textarea"
                   style={{
                     width: '100%', minHeight: 100,
                     background: 'transparent', border: 'none', outline: 'none',
@@ -292,7 +296,7 @@ export default function SubmitPage() {
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
             <div
-              className="paper-lined paper-shadow"
+              className="paper-lined paper-shadow paper-card-padded"
               style={{
                 maxWidth: 520, width: '100%',
                 padding: '36px 48px', textAlign: 'center',
@@ -360,7 +364,7 @@ export default function SubmitPage() {
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
             <div
-              className="paper-lined paper-shadow"
+              className="paper-lined paper-shadow paper-card-padded"
               style={{
                 maxWidth: 480, width: '100%',
                 padding: '36px 48px', textAlign: 'center',
@@ -434,7 +438,7 @@ export default function SubmitPage() {
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
             <div
-              className="paper-lined paper-shadow"
+              className="paper-lined paper-shadow paper-card-padded"
               style={{
                 maxWidth: 440, width: '100%',
                 padding: '40px 48px', textAlign: 'center',

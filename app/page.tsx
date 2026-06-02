@@ -3,15 +3,15 @@ import NavMenu from './components/NavMenu'
 
 export default function LandingPage() {
   return (
-    <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="park-bg landing-outer" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
       <NavMenu />
 
       {/* Main */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
+      <main className="landing-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
         <div style={{ maxWidth: 896, width: '100%' }}>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
+          <div className="landing-grid">
 
             {/* Card 1: Submit */}
             <Link href="/submit" style={{ textDecoration: 'none' }}>
@@ -99,8 +99,7 @@ export default function LandingPage() {
                 fontSize: 16, color: '#696458',
                 letterSpacing: '-0.02em', lineHeight: 1.7,
               }}>
-                這裡是匿名的。你說的話會留在這裡，<br />
-                也許有人懂你，甚至是幫你解決問題。
+                這裡是匿名的。你說的話會留在這裡，也許有人懂你，甚至是幫你解決問題。
               </p>
             </div>
           </div>
