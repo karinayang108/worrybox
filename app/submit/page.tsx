@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import NavMenu from '../components/NavMenu'
 import { submitComplaint } from '../actions'
@@ -15,6 +15,10 @@ export default function SubmitPage() {
   const [error, setError] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
+  const [flyKeys, setFlyKeys] = useState<{ key: string; id: number; x: number }[]>([])
+  const flyKeyIdRef = useRef(0)
+  const paperRef = useRef<HTMLDivElement>(null)
+  const [paperShake, setPaperShake] = useState(false)
 
   // Keyboard row → pitch multiplier (higher row = higher pitch, like a real typewriter)
   const KEY_ROW: Record<string, number> = {
@@ -81,10 +85,32 @@ export default function SubmitPage() {
     }
   }
 
+  function spawnFlyKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return
+    let label: string | null = null
+    if (e.key === ' ')         label = '␣'
+    else if (e.key === 'Enter')     label = '↵'
+    else if (e.key === 'Backspace') label = '⌫'
+    else if (e.key.length === 1)    label = e.key.toUpperCase()
+    if (!label) return
+
+    // Random horizontal offset so keys don't all stack
+    const x = (Math.random() - 0.5) * 120
+    const id = ++flyKeyIdRef.current
+    setFlyKeys(prev => [...prev.slice(-6), { key: label!, id, x }])
+    setTimeout(() => setFlyKeys(prev => prev.filter(k => k.id !== id)), 550)
+  }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     // Play click on every real keypress (skip modifier-only keys)
     if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace') {
       playTypewriterClick(e.key)
+      spawnFlyKey(e)
+    }
+    // Paper jitter on Enter
+    if (e.key === 'Enter') {
+      setPaperShake(true)
+      setTimeout(() => setPaperShake(false), 180)
     }
     if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing && content.trim()) {
       e.preventDefault()
@@ -106,6 +132,35 @@ export default function SubmitPage() {
 
   return (
     <div style={{ minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
+    <style>{`
+      @keyframes keyFly {
+        0%   { opacity: 1; transform: translateX(var(--kx)) translateY(0)   scale(1);    }
+        30%  { opacity: 1; transform: translateX(var(--kx)) translateY(-18px) scale(1.15); }
+        100% { opacity: 0; transform: translateX(var(--kx)) translateY(-52px) scale(0.8); }
+      }
+      @keyframes paperJitter {
+        0%,100% { transform: translateY(0); }
+        25%      { transform: translateY(-3px); }
+        75%      { transform: translateY(2px); }
+      }
+      .key-fly {
+        position: absolute;
+        pointer-events: none;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: Georgia, serif; font-size: 13px; font-weight: 700;
+        color: #faecc0;
+        background: radial-gradient(circle at 42% 28%, #f8d880 0%, #c88030 30%, #7a4010 65%, #3a1800 100%);
+        border: 2px solid #2a1000;
+        box-shadow: 0 4px 0 #1c0800, 0 6px 12px rgba(0,0,0,0.55),
+                    inset 0 2px 4px rgba(250,210,100,0.6),
+                    inset 0 -2px 4px rgba(0,0,0,0.35);
+        animation: keyFly 0.52s ease-out forwards;
+        z-index: 30;
+      }
+      .paper-jitter { animation: paperJitter 0.18s ease-in-out; }
+    `}</style>
 
       {/* ── STEP 1 ── */}
       {step === 1 && (
@@ -163,15 +218,18 @@ export default function SubmitPage() {
             <div style={{ maxWidth: 560, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
               {/* Paper — z-index 4 so it's above the typewriter image */}
-              <div style={{
-                width: 360,
-                backgroundColor: 'var(--paper-bg)',
-                backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, rgba(160,148,128,0.16) 28px)',
-                border: '1px solid rgba(220,210,190,0.6)',
-                boxShadow: '2px 0 6px -2px rgba(0,0,0,0.08), -2px 0 6px -2px rgba(0,0,0,0.08), 0 -2px 4px rgba(0,0,0,0.05)',
-                padding: '16px 28px 20px',
-                position: 'relative', zIndex: 4,
-                marginBottom: -160,
+              <div
+                ref={paperRef}
+                className={paperShake ? 'paper-jitter' : ''}
+                style={{
+                  width: 360,
+                  backgroundColor: 'var(--paper-bg)',
+                  backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, rgba(160,148,128,0.16) 28px)',
+                  border: '1px solid rgba(220,210,190,0.6)',
+                  boxShadow: '2px 0 6px -2px rgba(0,0,0,0.08), -2px 0 6px -2px rgba(0,0,0,0.08), 0 -2px 4px rgba(0,0,0,0.05)',
+                  padding: '16px 28px 20px',
+                  position: 'relative', zIndex: 4,
+                  marginBottom: -160,
               }}>
                 <div style={{
                   position: 'absolute', left: 44, top: 0, bottom: 0,
@@ -194,6 +252,19 @@ export default function SubmitPage() {
                     position: 'relative', zIndex: 5,
                   }}
                 />
+              </div>
+
+              {/* Flying key caps layer — sits between paper and typewriter */}
+              <div style={{ position: 'relative', width: 560, height: 0, zIndex: 6 }}>
+                {flyKeys.map(({ key, id, x }) => (
+                  <div
+                    key={id}
+                    className="key-fly"
+                    style={{ '--kx': `${x}px`, left: '50%', marginLeft: -18, top: -20 } as React.CSSProperties}
+                  >
+                    {key}
+                  </div>
+                ))}
               </div>
 
               {/* Typewriter image — pointer-events none so it never blocks the paper */}

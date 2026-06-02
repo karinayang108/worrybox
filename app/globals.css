@@ -13,7 +13,7 @@
   --paper-line:   rgba(160,148,128,0.16);
   --tape-bg:      rgba(233,226,211,0.48);
   --border-warm:  rgba(220,193,177,0.3);
-  --footer-h:     76px;
+  --footer-h:     44px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -60,7 +60,9 @@ body {
 
 /* ── White footer ── */
 .white-footer {
-  background: #fff;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   height: var(--footer-h);
   min-height: var(--footer-h);
   padding: 0 32px;
