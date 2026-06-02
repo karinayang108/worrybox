@@ -27,24 +27,41 @@ type Complaint = {
 
 export default function BrowseClient({ complaints }: { complaints: Complaint[] }) {
   const [active, setActive] = useState<string>('全部')
-  const filtered = active === '全部'
-    ? complaints
-    : complaints.filter(c => c.category === active)
+  const [sortBy, setSortBy] = useState<'latest' | 'top'>('latest')
+
+  const filtered = (active === '全部' ? complaints : complaints.filter(c => c.category === active))
+    .slice()
+    .sort(sortBy === 'top'
+      ? (a, b) => b.reactionCount - a.reactionCount
+      : (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
 
   return (
     <>
       <style>{`.worry-card { min-width: 0; } @media (max-width: 640px) { .worry-card { transform: none !important; } }`}</style>
-      {/* Category filter */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-        {CATEGORIES.map(cat => (
+      {/* Category filter + sort */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 28 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              className={`filter-pill ${active === cat ? 'active' : ''}`}
+              onClick={() => setActive(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           <button
-            key={cat}
-            className={`filter-pill ${active === cat ? 'active' : ''}`}
-            onClick={() => setActive(cat)}
-          >
-            {cat}
-          </button>
-        ))}
+            className={`filter-pill ${sortBy === 'latest' ? 'active' : ''}`}
+            onClick={() => setSortBy('latest')}
+          >最新</button>
+          <button
+            className={`filter-pill ${sortBy === 'top' ? 'active' : ''}`}
+            onClick={() => setSortBy('top')}
+          >最多共鳴</button>
+        </div>
       </div>
 
       {/* Cards */}
