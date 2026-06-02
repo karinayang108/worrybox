@@ -3,7 +3,7 @@ import Link from 'next/link'
 import NavMenu from '../components/NavMenu'
 import ReactionButton from './ReactionButton'
 
-const CATEGORIES = ['全部', '人際關係', '工作／學業', '科技／工具', '日常生活', '其他'] as const
+const CATEGORIES = ['全部', '人際關係', '工作/學業', '科技/工具', '日常生活', '其他'] as const
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
