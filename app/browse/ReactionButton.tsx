@@ -1,6 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const LS_KEY = 'worrybox_reacted'
+
+function getReacted(): Set<string> {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    return new Set(raw ? JSON.parse(raw) : [])
+  } catch { return new Set() }
+}
+
+function saveReacted(set: Set<string>) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify([...set])) } catch {}
+}
 
 interface Props {
   complaintId: string
@@ -11,6 +24,11 @@ export default function ReactionButton({ complaintId, initialCount }: Props) {
   const [count, setCount] = useState(initialCount)
   const [reacted, setReacted] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  // Initialise from localStorage after mount (client-only)
+  useEffect(() => {
+    setReacted(getReacted().has(complaintId))
+  }, [complaintId])
 
   async function handleClick() {
     if (loading) return
@@ -29,10 +47,15 @@ export default function ReactionButton({ complaintId, initialCount }: Props) {
       })
       const data = await res.json()
       // Sync with server truth
-      if (data.reacted !== newReacted) {
-        setReacted(data.reacted)
-        setCount(c => data.reacted ? c + 1 : c - 1)
+      const finalReacted = data.reacted ?? newReacted
+      if (finalReacted !== newReacted) {
+        setReacted(finalReacted)
+        setCount(c => finalReacted ? c + 1 : c - 1)
       }
+      // Persist to localStorage
+      const set = getReacted()
+      if (finalReacted) set.add(complaintId); else set.delete(complaintId)
+      saveReacted(set)
     } catch {
       // Roll back on error
       setReacted(reacted)
@@ -59,7 +82,7 @@ export default function ReactionButton({ complaintId, initialCount }: Props) {
           letterSpacing: '0.03em',
         }}
       >
-        🤍 我也有！
+        {reacted ? '🤎' : '🤍'} 我也有！
       </button>
       <span style={{
         fontFamily: 'var(--font-sans)',
