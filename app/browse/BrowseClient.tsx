@@ -27,13 +27,13 @@ type Complaint = {
 
 export default function BrowseClient({ complaints }: { complaints: Complaint[] }) {
   const [active, setActive] = useState<string>('全部')
-
   const filtered = active === '全部'
     ? complaints
     : complaints.filter(c => c.category === active)
 
   return (
     <>
+      <style>{`.worry-card { min-width: 0; } @media (max-width: 640px) { .worry-card { transform: none !important; } }`}</style>
       {/* Category filter */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
         {CATEGORIES.map(cat => (

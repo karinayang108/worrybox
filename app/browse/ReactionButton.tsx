@@ -66,7 +66,7 @@ export default function ReactionButton({ complaintId, initialCount }: Props) {
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
       <button
         onClick={handleClick}
         disabled={loading}
@@ -88,7 +88,6 @@ export default function ReactionButton({ complaintId, initialCount }: Props) {
       <span style={{
         fontFamily: 'var(--font-sans)',
         fontSize: 12, color: '#b8a888',
-        whiteSpace: 'nowrap',
       }}>{count} 人共鳴</span>
     </div>
   )
