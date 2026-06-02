@@ -96,10 +96,23 @@ export default function LandingPage() {
             }}>
               <p style={{
                 fontFamily: 'var(--font-sans)',
-                fontSize: 16, color: '#696458',
-                letterSpacing: '-0.02em', lineHeight: 1.7,
+                fontSize: 13, color: '#a89880', letterSpacing: '0.04em',
+                marginBottom: 12, textTransform: 'uppercase',
               }}>
-                這裡是匿名的。你說的話會留在這裡，也許有人懂你，甚至是幫你解決問題。
+                不用擔心，這裡是匿名的
+              </p>
+              <style>{`@media (min-width: 640px) { .m-br { display: none; } }`}</style>
+              <p style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 15, color: '#696458',
+                letterSpacing: '-0.02em', lineHeight: 1.85,
+              }}>
+                煩惱盒子收集真實的日常不滿——<br className="m-br" />
+                來自每個不想大聲說、<br className="m-br" />但忍不住想說的人。<br />
+                <br />
+                如果你只是想說說，這裡有人聽。<br />
+                如果你想解決問題，<br className="m-br" />
+                這裡是最誠實的靈感來源。
               </p>
             </div>
           </div>
