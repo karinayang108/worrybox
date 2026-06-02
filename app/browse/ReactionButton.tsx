@@ -80,13 +80,15 @@ export default function ReactionButton({ complaintId, initialCount }: Props) {
           cursor: loading ? 'default' : 'pointer',
           transition: 'all 0.15s',
           letterSpacing: '0.03em',
+          whiteSpace: 'nowrap',
         }}
       >
-        {reacted ? '🤎' : '🤍'} 我也有！
+        {reacted ? '🤎' : '🤍'} SAME
       </button>
       <span style={{
         fontFamily: 'var(--font-sans)',
         fontSize: 12, color: '#b8a888',
+        whiteSpace: 'nowrap',
       }}>{count} 人共鳴</span>
     </div>
   )
