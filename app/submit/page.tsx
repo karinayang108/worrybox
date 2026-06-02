@@ -29,8 +29,7 @@ export default function SubmitPage() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    // Shift+Enter = new line; Enter alone (with content) = advance to step 2
-    if (e.key === 'Enter' && !e.shiftKey && content.trim()) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing && content.trim()) {
       e.preventDefault()
       setStep(2)
     }

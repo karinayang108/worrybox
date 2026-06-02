@@ -218,6 +218,12 @@ body {
 .landing-card:hover {
   transform: translateY(-10px);
 }
+.landing-card-rotated {
+  transform: rotate(1.5deg);
+}
+.landing-card-rotated:hover {
+  transform: translateY(-10px) rotate(1.5deg);
+}
 
 /* ── Frosted glass card (landing) ── */
 .glass-card {
