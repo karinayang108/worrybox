@@ -38,30 +38,30 @@ export default function BrowseClient({ complaints }: { complaints: Complaint[] }
 
   return (
     <>
-      <style>{`.worry-card { min-width: 0; } @media (max-width: 640px) { .worry-card { transform: none !important; } }`}</style>
-      {/* Category filter + sort */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 28 }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              className={`filter-pill ${active === cat ? 'active' : ''}`}
-              onClick={() => setActive(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+      <style>{`
+        .worry-card { min-width: 0; }
+        @media (max-width: 640px) { .worry-card { transform: none !important; } }
+        @media (max-width: 640px) { .category-pills { justify-content: center; } }
+        .sort-tab { background: none; border: none; cursor: pointer; padding: 2px 0; font-family: var(--font-sans); font-size: 13px; color: rgba(255,255,255,0.55); letter-spacing: 0.02em; border-bottom: 1.5px solid transparent; transition: color 0.15s, border-color 0.15s; }
+        .sort-tab.active { color: #fff; border-bottom-color: #fff; }
+        .sort-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
+      `}</style>
+      {/* Category pills — centred on mobile */}
+      <div className="category-pills" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+        {CATEGORIES.map(cat => (
           <button
-            className={`filter-pill ${sortBy === 'latest' ? 'active' : ''}`}
-            onClick={() => setSortBy('latest')}
-          >最新</button>
-          <button
-            className={`filter-pill ${sortBy === 'top' ? 'active' : ''}`}
-            onClick={() => setSortBy('top')}
-          >最多共鳴</button>
-        </div>
+            key={cat}
+            className={`filter-pill ${active === cat ? 'active' : ''}`}
+            onClick={() => setActive(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+      {/* Sort tabs — underline style */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, marginBottom: 20 }}>
+        <button className={`sort-tab ${sortBy === 'latest' ? 'active' : ''}`} onClick={() => setSortBy('latest')}>最新</button>
+        <button className={`sort-tab ${sortBy === 'top' ? 'active' : ''}`} onClick={() => setSortBy('top')}>最多共鳴</button>
       </div>
 
       {/* Cards */}
