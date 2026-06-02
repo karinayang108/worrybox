@@ -50,7 +50,7 @@ export default async function BrowsePage() {
       </div>
 
       <div style={{
-        flex: 1, overflowY: 'auto',
+        flex: 1, overflowY: 'auto', overflowX: 'hidden',
         background: 'transparent',
         padding: '24px 24px 0',
       }}>

@@ -162,6 +162,7 @@ export default function SubmitPage() {
       .paper-jitter { animation: paperJitter 0.18s ease-in-out; }
       @media (max-width: 640px) {
         .paper-textarea { min-height: 200px !important; }
+        .title-break { display: block; }
       }
     `}</style>
 
@@ -176,7 +177,7 @@ export default function SubmitPage() {
               fontFamily: 'var(--font-serif)',
               fontSize: 40, fontWeight: 700, color: '#fff',
               textShadow: '0 2px 12px rgba(0,0,0,0.3)', marginBottom: 8,
-            }}>說說看，什麼讓你最近很煩？</h1>
+            }}>說說看 <span className="title-break">什麼讓你一直都覺得很煩？</span></h1>
             <p className="submit-hero-sub" style={{
               fontFamily: 'var(--font-sans)',
               fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.7,
