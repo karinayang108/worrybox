@@ -171,15 +171,15 @@ export default function SubmitPage() {
           <NavMenu />
 
           {/* Title */}
-          <div style={{ textAlign: 'center', padding: '16px 24px 0', flexShrink: 0 }}>
+          <div style={{ textAlign: 'center', padding: '20px 32px 28px', flexShrink: 0 }}>
             <h1 className="submit-hero-title" style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: 32, fontWeight: 700, color: '#fff',
+              fontSize: 40, fontWeight: 700, color: '#fff',
               textShadow: '0 2px 12px rgba(0,0,0,0.3)', marginBottom: 8,
             }}>說說看，什麼讓你最近很煩？</h1>
             <p className="submit-hero-sub" style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7,
+              fontSize: 15, color: 'rgba(255,255,255,0.72)', lineHeight: 1.7,
             }}>
               生活中某件重複讓你覺得麻煩的事？人與人之間讓你覺得累的事？某個 App 或工具讓你用得很崩潰？
             </p>
