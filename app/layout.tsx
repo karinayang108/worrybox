@@ -19,7 +19,7 @@ const notoSerifTC = Noto_Serif_TC({
 })
 
 export const metadata: Metadata = {
-  title: '煩惱盒子 | 匿名傾訴空間',
+  title: '煩惱盒子 | Pain points collection',
   description: '說說看，什麼讓你最近很煩？把不愉快的心事寫下來，也許有人懂你。',
 }
 

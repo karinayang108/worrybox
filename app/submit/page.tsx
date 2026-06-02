@@ -120,13 +120,13 @@ export default function SubmitPage() {
 
   const wfFooter = (
     <div className="white-footer" style={{ position: 'relative', zIndex: 1, marginTop: -56 }}>
-      <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+      <div className="wf-copy">© 煩惱盒子 | Pain points collection</div>
     </div>
   )
 
   const stdFooter = (
     <footer className="white-footer">
-      <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+      <div className="wf-copy">© 煩惱盒子 | Pain points collection</div>
     </footer>
   )
 

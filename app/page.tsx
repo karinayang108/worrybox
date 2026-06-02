@@ -121,7 +121,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="white-footer">
-        <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間 | 痛點靈感</div>
+        <div className="wf-copy">© 煩惱盒子 | Pain points collection</div>
       </footer>
     </div>
   )
