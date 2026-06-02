@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ABeeZee, Noto_Serif_TC } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const abeeZee = ABeeZee({
@@ -29,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-TW" className={`${abeeZee.variable} ${notoSerifTC.variable}`}>
-      <body>{children}</body>
+      <body>{children}<Analytics /></body>
     </html>
   )
 }
