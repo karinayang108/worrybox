@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: url('/bg.jpg') center/cover no-repeat;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end;
+  min-height: 100vh;
+}
+
+/* ══ MACHINE ══ */
+.machine {
+  width: 620px;
+  position: relative;
+  filter: drop-shadow(0 24px 60px rgba(0,0,0,0.65));
+}
+
+/* ══ PAPER SECTION ══ */
+.paper-section {
+  display: flex; justify-content: center;
+  position: relative; z-index: 10;
+}
+.paper-wrap {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+}
+.paper-clips {
+  display: flex; justify-content: space-between;
+  width: 290px; height: 14px; margin-top: -2px;
+}
+.guide-clip {
+  width: 22px; height: 14px;
+  background: linear-gradient(to right, #787878, #d8d8d8 40%, #a8a8a8 60%, #646464);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4);
+}
+.paper {
+  width: 290px; height: 170px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 5px 0 14px rgba(0,0,0,0.2), -5px 0 14px rgba(0,0,0,0.2), inset 0 -16px 30px rgba(0,0,0,0.08);
+}
+.paper::before {
+  content:''; position:absolute; top:0; bottom:0; width:1.5px;
+}
+.paper-text {
+  position:absolute; bottom:10px; left:0; right:0;
+  padding: 0 14px 0 44px;
+  font-family: 'Courier New', monospace;
+  font-size:13px; line-height:24px;
+  white-space:pre-wrap; word-break:break-word; letter-spacing:0.04em;
+}
+.cursor {
+  display:inline-block; width:1.5px; height:12px;
+  margin-left:1px; vertical-align:middle;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+/* ══ ROLLER HOUSING ══ */
+.roller-housing {
+  display: flex; align-items: center;
+  padding: 6px 14px;
+  gap: 10px; position: relative; z-index: 5;
+}
+.spool {
+  width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+  position: relative;
+}
+.spool::before {
+  content:''; position:absolute; inset:7px; border-radius:50%;
+  box-shadow: inset 0 3px 7px rgba(0,0,0,0.55), inset 0 -2px 3px rgba(255,255,255,0.1);
+  border: 2.5px solid rgba(0,0,0,0.2);
+}
+.spool::after {
+  content:''; position:absolute; inset:20px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, #d0d0d0, #808080 50%, #404040);
+  border: 2px solid #303030;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -1px 2px rgba(255,255,255,0.15);
+}
+.platen-wrap { flex: 1; position: relative; }
+.platen {
+  height: 28px; border-radius: 14px;
+  background: linear-gradient(to bottom,
+    #606060 0%, #383838 12%, #141414 45%, #222222 65%, #424242 85%, #585858 100%);
+  border: 2.5px solid #080808;
+  box-shadow:
+    0 5px 0 #040404, 0 7px 14px rgba(0,0,0,0.75),
+    inset 0 2px 4px rgba(255,255,255,0.07), inset 0 -1px 3px rgba(0,0,0,0.6);
+  overflow: hidden; position: relative;
+}
+.platen::before {
+  content:''; position:absolute; top:4px; left:8%; right:8%; height:4px;
+  background: rgba(255,255,255,0.07); border-radius:2px;
+}
+.platen::after {
+  content:''; position:absolute; inset:0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 11px, rgba(0,0,0,0.09) 11px, rgba(0,0,0,0.09) 12px);
+}
+
+/* ══ ARCH PANEL ══ */
+.arch-wrap {
+  position: relative; height: 80px; overflow: hidden; margin-top: -1px;
+}
+.arch-wrap svg { width: 100%; height: 100%; display: block; }
+
+/* ══ MAIN BODY ══ */
+.body {
+  border-top: none;
+  border-radius: 0 0 28px 28px;
+  padding: 14px 28px 26px;
+  position: relative;
+}
+.body::before {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:12px;
+  border-radius: 0 0 0 28px;
+}
+.body::after {
+  content:''; position:absolute;
+  right:0; top:0; bottom:0; width:12px;
+  border-radius: 0 0 28px 0;
+}
+.trim-top { height:2px; margin-bottom:12px; }
+.trim-bot { height:1.5px; margin-top:14px; opacity:0.7; }
+.kb-well {
+  border-radius: 10px;
+  padding: 14px 12px 16px;
+  border: 2px solid rgba(0,0,0,0.3);
+}
+.keyboard { display:flex; flex-direction:column; gap:7px; align-items:center; }
+.key-row { display:flex; gap:6px; }
+
+/* ══ KEYS ══ */
+.key {
+  width: 37px; height: 37px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Georgia, serif; font-size: 11px; font-weight: 700;
+  cursor: default; position: relative;
+  border: 2px solid rgba(0,0,0,0.5);
+  transition: transform 0.07s ease, box-shadow 0.07s ease;
+}
+.key::before {
+  content:''; position:absolute; inset:5px; border-radius:50%;
+  box-shadow: inset 0 3px 7px rgba(0,0,0,0.45), inset 0 -1px 3px rgba(255,255,255,0.15);
+  border: 1px solid rgba(0,0,0,0.3);
+}
+.key span { position:relative; z-index:2; }
+.key.pressed {
+  transform: translateY(5px) scale(0.90);
+}
+.space-row { display:flex; justify-content:center; gap:8px; margin-top:2px; }
+.fn-key {
+  width:38px; height:26px; border-radius:13px;
+  border: 2px solid rgba(0,0,0,0.4);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.4), 0 6px 10px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.2);
+  transition: transform 0.07s ease, box-shadow 0.07s ease; position:relative;
+}
+.fn-key::before {
+  content:''; position:absolute; inset:4px 6px;
+  border-radius:9px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+}
+.fn-key.pressed { transform:translateY(4px); box-shadow:0 0 0 rgba(0,0,0,0.4), inset 0 2px 5px rgba(0,0,0,0.4); }
+.spacebar {
+  width: 215px; height: 26px; border-radius:13px;
+  border: 2px solid rgba(0,0,0,0.4);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.4), 0 6px 10px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.2);
+  transition: transform 0.07s ease, box-shadow 0.07s ease; position:relative;
+}
+.spacebar::before {
+  content:''; position:absolute; inset:4px 12px;
+  border-radius:9px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+}
+.spacebar.pressed { transform:translateY(4px); box-shadow:0 0 0 rgba(0,0,0,0.4), inset 0 2px 5px rgba(0,0,0,0.4); }
+.feet { display:flex; justify-content:space-between; padding:0 60px; }
+.foot {
+  width:58px; height:18px;
+  border-radius:0 0 10px 10px; border-top:none;
+  box-shadow:0 5px 10px rgba(0,0,0,0.5);
+}
+
+/* ══ THEME SWITCHER ══ */
+.theme-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0 14px;
+}
+.hint {
+  color:rgba(255,255,255,0.8); font-family:sans-serif;
+  font-size:13px; letter-spacing:0.05em;
+  text-shadow:0 1px 4px rgba(0,0,0,0.7);
+}
+.theme-btn {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+.theme-btn:hover { transform: scale(1.15); }
+.theme-btn.active { border-color: rgba(255,255,255,0.95); transform: scale(1.1); }
+#btn-blue  { background: radial-gradient(circle at 35% 30%, #a8d8f0, #3a7aaa 50%, #1a4a70); }
+#btn-brass { background: radial-gradient(circle at 35% 30%, #f0c870, #b87333 50%, #6b3d1a); }
+#btn-noir  { background: radial-gradient(circle at 35% 30%, #888, #222 50%, #000); }
+
+/* ══ TRANSITION ══ */
+.machine, .machine * { transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease; }
+.machine .key, .machine .fn-key, .machine .spacebar { transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.07s ease; }
+
+/* ══════════════════════════════════════════
+   THEME: DEFAULT (Vintage Green)
+══════════════════════════════════════════ */
+.paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 23px, rgba(130,110,70,0.15) 23px, rgba(130,110,70,0.15) 24px),
+    linear-gradient(to bottom right, #fdf6dc, #f5ebc0);
+}
+.paper::before { left:36px; background:rgba(180,60,60,0.2); }
+.paper-text { color:#1a0a00; }
+.cursor { background:#1a0a00; }
+
+.roller-housing {
+  background: linear-gradient(to bottom, #2a6228 0%, #1a4a18 50%, #2a6228 100%);
+  border-top: 3px solid #c8a040;
+  border-bottom: 2px solid #8a6018;
+  box-shadow: inset 0 2px 6px rgba(100,200,80,0.1), inset 0 -3px 8px rgba(0,0,0,0.4);
+}
+.spool {
+  background: radial-gradient(circle at 32% 26%, #8ed880 0%, #50a040 20%, #2e7028 45%, #1a4a18 70%, #0e2a0c 100%);
+  border: 3px solid #1a3a10;
+  box-shadow: 4px 5px 0 #0a1a08, 5px 7px 14px rgba(0,0,0,0.65), inset 0 3px 8px rgba(140,220,100,0.35), inset 0 -3px 6px rgba(0,0,0,0.5);
+}
+.spool::before { background: radial-gradient(circle at 35% 28%, #70b860, #1e4a18 60%, #102a0c); border-color: #3a6820; }
+
+.body {
+  background: linear-gradient(160deg, #509048 0% 4%, #2e6828 6%, #1e5020 40%, #163c12 80%, #1a4818 100%);
+  border: 3px solid #a07828;
+  box-shadow: 0 18px 0 #081208, 0 22px 40px rgba(0,0,0,0.7), inset 3px 0 10px rgba(0,0,0,0.3), inset -3px 0 10px rgba(0,0,0,0.3), inset 0 2px 8px rgba(100,200,70,0.1), inset 0 -6px 18px rgba(0,0,0,0.5);
+}
+.body::before { background: linear-gradient(to right, #0a1e08, transparent); }
+.body::after  { background: linear-gradient(to left,  #0a1e08, transparent); }
+.trim-top { background: linear-gradient(90deg, transparent, #d4aa48 10%, #d4aa48 90%, transparent); }
+.trim-bot { background: linear-gradient(90deg, transparent, #8a6820 10%, #8a6820 90%, transparent); }
+.kb-well {
+  background: linear-gradient(to bottom, #0a1808, #111e0e);
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.7), inset 0 -2px 6px rgba(0,0,0,0.4), inset 4px 0 10px rgba(0,0,0,0.3), inset -4px 0 10px rgba(0,0,0,0.3);
+  border-color: #0e2008;
+}
+.key {
+  background: radial-gradient(circle at 42% 22%, #f4e8b0 0%, #d0b060 25%, #a08030 55%, #6a5020 80%, #4a3410 100%);
+  border-color: #3a2408; color: #1e1008;
+  box-shadow: 0 5px 0 #2e1c04, 0 7px 14px rgba(0,0,0,0.65), inset 0 2px 4px rgba(255,240,160,0.65), inset 0 -2px 4px rgba(0,0,0,0.35);
+}
+.key::before { background: radial-gradient(circle at 40% 28%, #f0e090 0%, #d4b050 30%, #a88030 60%, #7a5a1e 85%, #5a3e12 100%); }
+.key.pressed { box-shadow: 0 0 0 #2e1c04, 0 2px 6px rgba(0,0,0,0.55), inset 0 1px 2px rgba(255,240,160,0.3), inset 0 3px 9px rgba(0,0,0,0.45); }
+.key.pressed::before { background: radial-gradient(circle at 40% 28%, #c8aa60, #9a7020 35%, #7a5018 65%, #5a3a10 100%); }
+.fn-key, .spacebar {
+  background: radial-gradient(ellipse at 50% 25%, #f0e4a8, #7a5818);
+  border-color: #3a2408;
+  box-shadow: 0 4px 0 #2e1c04, 0 6px 10px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,240,160,0.55);
+}
+.fn-key::before, .spacebar::before { background: radial-gradient(ellipse at 50% 25%, #d8c878, #9a7830); }
+.foot { background: linear-gradient(to bottom, #162a10, #0a1808); border-color: #0a1008; }
+
+/* ══════════════════════════════════════════
+   THEME: OLIVETTI BLUE
+══════════════════════════════════════════ */
+.machine[data-theme="blue"] .paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 23px, rgba(100,140,200,0.12) 23px, rgba(100,140,200,0.12) 24px),
+    linear-gradient(to bottom right, #ffffff, #f0f6ff);
+}
+.machine[data-theme="blue"] .paper::before { background: rgba(80,140,220,0.25); }
+.machine[data-theme="blue"] .paper-text { color: #0a1a30; }
+.machine[data-theme="blue"] .cursor { background: #0a1a30; }
+
+.machine[data-theme="blue"] .roller-housing {
+  background: linear-gradient(to bottom, #5a88b8 0%, #3a6090 50%, #5a88b8 100%);
+  border-top: 3px solid #c0d8f0;
+  border-bottom: 2px solid #2a4870;
+  box-shadow: inset 0 2px 6px rgba(180,220,255,0.2), inset 0 -3px 8px rgba(0,0,0,0.35);
+}
+.machine[data-theme="blue"] .spool {
+  background: radial-gradient(circle at 32% 26%, #c8e8ff 0%, #70aae0 20%, #3a78b8 45%, #1e4a80 70%, #0e2848 100%);
+  border: 3px solid #1a3860;
+  box-shadow: 4px 5px 0 #0a1e40, 5px 7px 14px rgba(0,0,0,0.6), inset 0 3px 8px rgba(180,220,255,0.4), inset 0 -3px 6px rgba(0,0,0,0.45);
+}
+.machine[data-theme="blue"] .spool::before {
+  background: radial-gradient(circle at 35% 28%, #a0d0f8, #2860a0 60%, #10306a);
+  border-color: #2a5888;
+}
+.machine[data-theme="blue"] .spool::after {
+  background: radial-gradient(circle at 35% 30%, #e8f4ff, #909090 50%, #404040);
+}
+
+.machine[data-theme="blue"] .body {
+  background: linear-gradient(160deg, #78aad8 0% 4%, #4a88c0 6%, #2e6098 40%, #1a4070 80%, #224878 100%);
+  border: 3px solid #a0c8e8;
+  box-shadow: 0 18px 0 #081828, 0 22px 40px rgba(0,0,0,0.65), inset 3px 0 10px rgba(0,0,0,0.25), inset -3px 0 10px rgba(0,0,0,0.25), inset 0 2px 8px rgba(180,220,255,0.15), inset 0 -6px 18px rgba(0,0,0,0.45);
+}
+.machine[data-theme="blue"] .body::before { background: linear-gradient(to right, #081828, transparent); }
+.machine[data-theme="blue"] .body::after  { background: linear-gradient(to left,  #081828, transparent); }
+.machine[data-theme="blue"] .trim-top { background: linear-gradient(90deg, transparent, #c0d8f0 10%, #c0d8f0 90%, transparent); }
+.machine[data-theme="blue"] .trim-bot { background: linear-gradient(90deg, transparent, #5a88b8 10%, #5a88b8 90%, transparent); }
+.machine[data-theme="blue"] .kb-well {
+  background: linear-gradient(to bottom, #0a1828, #101e38);
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.7), inset 0 -2px 6px rgba(0,0,0,0.4), inset 4px 0 10px rgba(0,0,0,0.3), inset -4px 0 10px rgba(0,0,0,0.3);
+  border-color: #0e1a30;
+}
+.machine[data-theme="blue"] .key {
+  background: radial-gradient(circle at 42% 22%, #e8f4ff 0%, #a0c8e8 25%, #5888b8 55%, #2a5888 80%, #102848 100%);
+  border-color: #1a3860; color: #e8f4ff;
+  box-shadow: 0 5px 0 #0a1e48, 0 7px 14px rgba(0,0,0,0.6), inset 0 2px 4px rgba(200,230,255,0.7), inset 0 -2px 4px rgba(0,0,0,0.3);
+}
+.machine[data-theme="blue"] .key::before {
+  background: radial-gradient(circle at 40% 28%, #d0ecff 0%, #80b8e0 30%, #4878a8 60%, #284870 85%, #102040 100%);
+}
+.machine[data-theme="blue"] .key.pressed {
+  box-shadow: 0 0 0 #0a1e48, 0 2px 6px rgba(0,0,0,0.5), inset 0 1px 2px rgba(200,230,255,0.3), inset 0 3px 9px rgba(0,0,0,0.4);
+}
+.machine[data-theme="blue"] .key.pressed::before {
+  background: radial-gradient(circle at 40% 28%, #90c8e8, #3868a0 35%, #204878 65%, #102040 100%);
+}
+.machine[data-theme="blue"] .fn-key,
+.machine[data-theme="blue"] .spacebar {
+  background: radial-gradient(ellipse at 50% 25%, #d8eeff, #3870a8);
+  border-color: #1a3860;
+  box-shadow: 0 4px 0 #0a1e48, 0 6px 10px rgba(0,0,0,0.55), inset 0 2px 3px rgba(200,230,255,0.55);
+}
+.machine[data-theme="blue"] .fn-key::before,
+.machine[data-theme="blue"] .spacebar::before {
+  background: radial-gradient(ellipse at 50% 25%, #b0d8f8, #2860a0);
+}
+.machine[data-theme="blue"] .foot {
+  background: linear-gradient(to bottom, #0e2040, #081428);
+  border-color: #081020;
+}
+
+/* ══════════════════════════════════════════
+   THEME: STEAMPUNK BRASS
+══════════════════════════════════════════ */
+.machine[data-theme="brass"] .paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 23px, rgba(120,80,30,0.12) 23px, rgba(120,80,30,0.12) 24px),
+    linear-gradient(to bottom right, #f8eac8, #ecd8a0);
+}
+.machine[data-theme="brass"] .paper::before { background: rgba(100,60,20,0.3); }
+.machine[data-theme="brass"] .paper-text { color: #2a1000; }
+.machine[data-theme="brass"] .cursor { background: #2a1000; }
+
+.machine[data-theme="brass"] .roller-housing {
+  background: linear-gradient(to bottom, #5a3010 0%, #3a1c08 50%, #5a3010 100%);
+  border-top: 3px solid #d89040;
+  border-bottom: 2px solid #7a4810;
+  box-shadow: inset 0 2px 6px rgba(220,160,60,0.15), inset 0 -3px 8px rgba(0,0,0,0.5);
+}
+.machine[data-theme="brass"] .spool {
+  background: radial-gradient(circle at 32% 26%, #f0c870 0%, #c88030 20%, #8a4818 45%, #4a2008 70%, #281008 100%);
+  border: 3px solid #3a1c04;
+  box-shadow: 4px 5px 0 #180a00, 5px 7px 14px rgba(0,0,0,0.7), inset 0 3px 8px rgba(240,180,80,0.4), inset 0 -3px 6px rgba(0,0,0,0.55);
+}
+.machine[data-theme="brass"] .spool::before {
+  background: radial-gradient(circle at 35% 28%, #e0a840, #7a4010 60%, #3a1800);
+  border-color: #6a3810;
+}
+.machine[data-theme="brass"] .spool::after {
+  background: radial-gradient(circle at 35% 30%, #f0d890, #b87840 50%, #6a4010);
+}
+
+.machine[data-theme="brass"] .body {
+  background: linear-gradient(160deg, #6a3818 0% 4%, #4a2408 6%, #341808 40%, #200e04 80%, #2c1408 100%);
+  border: 3px solid #b87830;
+  box-shadow: 0 18px 0 #0c0600, 0 22px 40px rgba(0,0,0,0.75), inset 3px 0 10px rgba(0,0,0,0.4), inset -3px 0 10px rgba(0,0,0,0.4), inset 0 2px 8px rgba(220,140,40,0.1), inset 0 -6px 18px rgba(0,0,0,0.55);
+}
+.machine[data-theme="brass"] .body::before { background: linear-gradient(to right, #0c0600, transparent); }
+.machine[data-theme="brass"] .body::after  { background: linear-gradient(to left,  #0c0600, transparent); }
+.machine[data-theme="brass"] .trim-top { background: linear-gradient(90deg, transparent, #d89040 10%, #d89040 90%, transparent); }
+.machine[data-theme="brass"] .trim-bot { background: linear-gradient(90deg, transparent, #8a5020 10%, #8a5020 90%, transparent); }
+.machine[data-theme="brass"] .kb-well {
+  background: linear-gradient(to bottom, #180800, #201008);
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.75), inset 0 -2px 6px rgba(0,0,0,0.5), inset 4px 0 10px rgba(0,0,0,0.4), inset -4px 0 10px rgba(0,0,0,0.4);
+  border-color: #180800;
+}
+.machine[data-theme="brass"] .key {
+  background: radial-gradient(circle at 42% 22%, #f8d880 0%, #d89838 25%, #a86018 55%, #6a3808 80%, #381800 100%);
+  border-color: #2a1000; color: #faecc0;
+  box-shadow: 0 5px 0 #1c0800, 0 7px 14px rgba(0,0,0,0.7), inset 0 2px 4px rgba(250,210,100,0.7), inset 0 -2px 4px rgba(0,0,0,0.4);
+}
+.machine[data-theme="brass"] .key::before {
+  background: radial-gradient(circle at 40% 28%, #f0c860 0%, #c07828 30%, #885018 60%, #583008 85%, #301000 100%);
+}
+.machine[data-theme="brass"] .key.pressed {
+  box-shadow: 0 0 0 #1c0800, 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 2px rgba(250,210,100,0.3), inset 0 3px 9px rgba(0,0,0,0.5);
+}
+.machine[data-theme="brass"] .key.pressed::before {
+  background: radial-gradient(circle at 40% 28%, #c89838, #906018 35%, #603008 65%, #301000 100%);
+}
+.machine[data-theme="brass"] .fn-key,
+.machine[data-theme="brass"] .spacebar {
+  background: radial-gradient(ellipse at 50% 25%, #f0c870, #8a4c10);
+  border-color: #2a1000;
+  box-shadow: 0 4px 0 #1c0800, 0 6px 10px rgba(0,0,0,0.6), inset 0 2px 3px rgba(250,210,100,0.5);
+}
+.machine[data-theme="brass"] .fn-key::before,
+.machine[data-theme="brass"] .spacebar::before {
+  background: radial-gradient(ellipse at 50% 25%, #d8a848, #7a3c08);
+}
+.machine[data-theme="brass"] .foot {
+  background: linear-gradient(to bottom, #281000, #180800);
+  border-color: #100600;
+}
+
+/* ══════════════════════════════════════════
+   THEME: MIDNIGHT NOIR (Art Deco)
+══════════════════════════════════════════ */
+.machine[data-theme="noir"] .paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 23px, rgba(180,160,80,0.1) 23px, rgba(180,160,80,0.1) 24px),
+    linear-gradient(to bottom right, #fafaf8, #f0eee8);
+}
+.machine[data-theme="noir"] .paper::before { background: rgba(180,150,40,0.35); }
+.machine[data-theme="noir"] .paper-text { color: #080808; }
+.machine[data-theme="noir"] .cursor { background: #080808; }
+
+.machine[data-theme="noir"] .roller-housing {
+  background: linear-gradient(to bottom, #2a2a2a 0%, #141414 50%, #2a2a2a 100%);
+  border-top: 3px solid #d4aa48;
+  border-bottom: 2px solid #888040;
+  box-shadow: inset 0 2px 6px rgba(220,180,60,0.1), inset 0 -3px 8px rgba(0,0,0,0.6);
+}
+.machine[data-theme="noir"] .spool {
+  background: radial-gradient(circle at 32% 26%, #585858 0%, #303030 20%, #181818 45%, #0a0a0a 70%, #040404 100%);
+  border: 3px solid #d4aa48;
+  box-shadow: 4px 5px 0 #020202, 5px 7px 14px rgba(0,0,0,0.8), inset 0 3px 8px rgba(220,180,60,0.2), inset 0 -3px 6px rgba(0,0,0,0.6);
+}
+.machine[data-theme="noir"] .spool::before {
+  background: radial-gradient(circle at 35% 28%, #484848, #181818 60%, #080808);
+  border-color: #d4aa48;
+}
+.machine[data-theme="noir"] .spool::after {
+  background: radial-gradient(circle at 35% 30%, #f0f0f0, #a0a0a0 50%, #404040);
+}
+
+.machine[data-theme="noir"] .body {
+  background: linear-gradient(160deg, #282828 0% 4%, #181818 6%, #0e0e0e 40%, #080808 80%, #101010 100%);
+  border: 3px solid #d4aa48;
+  box-shadow: 0 18px 0 #020202, 0 22px 40px rgba(0,0,0,0.85), inset 3px 0 10px rgba(0,0,0,0.5), inset -3px 0 10px rgba(0,0,0,0.5), inset 0 2px 8px rgba(220,180,60,0.08), inset 0 -6px 18px rgba(0,0,0,0.6);
+}
+.machine[data-theme="noir"] .body::before { background: linear-gradient(to right, #020202, transparent); }
+.machine[data-theme="noir"] .body::after  { background: linear-gradient(to left,  #020202, transparent); }
+.machine[data-theme="noir"] .trim-top { background: linear-gradient(90deg, transparent, #d4aa48 10%, #d4aa48 90%, transparent); }
+.machine[data-theme="noir"] .trim-bot { background: linear-gradient(90deg, transparent, #887830 10%, #887830 90%, transparent); }
+.machine[data-theme="noir"] .kb-well {
+  background: linear-gradient(to bottom, #040404, #080808);
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.85), inset 0 -2px 6px rgba(0,0,0,0.6), inset 4px 0 10px rgba(0,0,0,0.5), inset -4px 0 10px rgba(0,0,0,0.5);
+  border-color: #020202;
+}
+.machine[data-theme="noir"] .key {
+  background: radial-gradient(circle at 42% 22%, #686868 0%, #383838 25%, #181818 55%, #0a0a0a 80%, #040404 100%);
+  border-color: #d4aa48; color: #d4aa48;
+  box-shadow: 0 5px 0 #020202, 0 7px 14px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.12), inset 0 -2px 4px rgba(0,0,0,0.5);
+}
+.machine[data-theme="noir"] .key::before {
+  background: radial-gradient(circle at 40% 28%, #404040 0%, #202020 30%, #101010 60%, #080808 85%, #040404 100%);
+  border-color: rgba(212,170,72,0.3);
+}
+.machine[data-theme="noir"] .key.pressed {
+  box-shadow: 0 0 0 #020202, 0 2px 6px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.08), inset 0 3px 9px rgba(0,0,0,0.6);
+}
+.machine[data-theme="noir"] .key.pressed::before {
+  background: radial-gradient(circle at 40% 28%, #282828, #141414 35%, #080808 65%, #040404 100%);
+}
+.machine[data-theme="noir"] .fn-key,
+.machine[data-theme="noir"] .spacebar {
+  background: radial-gradient(ellipse at 50% 25%, #484848, #0c0c0c);
+  border-color: #d4aa48;
+  box-shadow: 0 4px 0 #020202, 0 6px 10px rgba(0,0,0,0.7), inset 0 2px 3px rgba(255,255,255,0.1);
+}
+.machine[data-theme="noir"] .fn-key::before,
+.machine[data-theme="noir"] .spacebar::before {
+  background: radial-gradient(ellipse at 50% 25%, #303030, #0a0a0a);
+}
+.machine[data-theme="noir"] .foot {
+  background: linear-gradient(to bottom, #101010, #040404);
+  border-color: #d4aa48;
+}
+</style>
+</head>
+<body>
+<div class="machine" id="machine" data-theme="brass">
+
+  <!-- Paper -->
+  <div class="paper-section">
+    <div class="paper-wrap">
+      <div class="paper">
+        <div class="paper-text" id="paper-text">
+          <span id="txt"></span><span class="cursor"></span>
+        </div>
+      </div>
+      <div class="paper-clips">
+        <div class="guide-clip"></div>
+        <div class="guide-clip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roller housing -->
+  <div class="roller-housing">
+    <div class="spool"></div>
+    <div class="platen-wrap"><div class="platen"></div></div>
+    <div class="spool"></div>
+  </div>
+
+  <!-- Arch panel -->
+  <div class="arch-wrap" id="arch-wrap">
+    <!-- Default: Vintage Green arch -->
+    <svg id="arch-svg" viewBox="0 0 620 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="archGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3a7030"/>
+          <stop offset="40%" stop-color="#2a5a22"/>
+          <stop offset="100%" stop-color="#1a4018"/>
+        </linearGradient>
+        <linearGradient id="archGrad2" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0%" stop-color="#4a8038" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+      </defs>
+      <rect width="620" height="80" fill="url(#archGrad)"/>
+      <rect y="0" width="620" height="3" fill="#8a6018"/>
+      <path d="M 60 72 C 60 72 140 12 220 8 L 400 8 C 480 12 560 72 560 72 Z" fill="#111e0c" stroke="#0a1208" stroke-width="1"/>
+      <path d="M 80 68 C 80 68 155 16 222 12 L 398 12 C 465 16 540 68 540 68" fill="none" stroke="rgba(80,160,60,0.2)" stroke-width="3"/>
+      <path d="M 20 76 C 20 76 90 18 185 10 L 435 10 C 530 18 600 76 600 76" fill="none" stroke="#c8a040" stroke-width="1.8"/>
+      <path d="M 20 78 C 20 78 90 22 185 14 L 435 14 C 530 22 600 78 600 78" fill="none" stroke="#8a6818" stroke-width="1" opacity="0.6"/>
+      <g transform="translate(22,56)" fill="none" stroke="#c8a040" stroke-width="1.2">
+        <path d="M 0 0 C 5 -8 14 -8 14 0 C 14 8 5 8 5 0 C 5 -4 10 -4 10 0"/>
+        <path d="M 14 0 L 26 0"/>
+        <circle cx="3" cy="0" r="1.5" fill="#c8a040"/>
+      </g>
+      <g transform="translate(598,56) scale(-1,1)" fill="none" stroke="#c8a040" stroke-width="1.2">
+        <path d="M 0 0 C 5 -8 14 -8 14 0 C 14 8 5 8 5 0 C 5 -4 10 -4 10 0"/>
+        <path d="M 14 0 L 26 0"/>
+        <circle cx="3" cy="0" r="1.5" fill="#c8a040"/>
+      </g>
+      <rect x="0" y="0" width="620" height="80" fill="url(#archGrad2)"/>
+      <rect y="77" width="620" height="3" fill="#a07828"/>
+    </svg>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+    <div class="trim-top"></div>
+    <div class="kb-well">
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+    <div class="trim-bot"></div>
+  </div>
+  <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+</div>
+
+<div class="theme-bar">
+  <p class="hint">點畫面後打字，中英文皆可 ✦</p>
+  <button class="theme-btn" id="btn-blue"  title="Olivetti Blue"   onclick="setTheme('blue')"></button>
+  <button class="theme-btn" id="btn-brass" title="Steampunk Brass" onclick="setTheme('brass')"></button>
+  <button class="theme-btn" id="btn-noir"  title="Midnight Noir"   onclick="setTheme('noir')"></button>
+</div>
+
+<textarea id="hidden"
+  style="position:fixed;opacity:0;width:1px;height:1px;top:0;left:0;font-size:16px;pointer-events:none;"
+  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+
+<script>
+/* ══ SVG ARCH TEMPLATES ══ */
+const ARCHES = {
+  default: `
+    <defs>
+      <linearGradient id="archGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3a7030"/>
+        <stop offset="40%" stop-color="#2a5a22"/>
+        <stop offset="100%" stop-color="#1a4018"/>
+      </linearGradient>
+      <linearGradient id="archGrad2" x1="0" y1="0" x2="0.3" y2="1">
+        <stop offset="0%" stop-color="#4a8038" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </linearGradient>
+    </defs>
+    <rect width="620" height="80" fill="url(#archGrad)"/>
+    <rect y="0" width="620" height="3" fill="#8a6018"/>
+    <path d="M 60 72 C 60 72 140 12 220 8 L 400 8 C 480 12 560 72 560 72 Z" fill="#111e0c" stroke="#0a1208" stroke-width="1"/>
+    <path d="M 80 68 C 80 68 155 16 222 12 L 398 12 C 465 16 540 68 540 68" fill="none" stroke="rgba(80,160,60,0.2)" stroke-width="3"/>
+    <path d="M 20 76 C 20 76 90 18 185 10 L 435 10 C 530 18 600 76 600 76" fill="none" stroke="#c8a040" stroke-width="1.8"/>
+    <path d="M 20 78 C 20 78 90 22 185 14 L 435 14 C 530 22 600 78 600 78" fill="none" stroke="#8a6818" stroke-width="1" opacity="0.6"/>
+    <g transform="translate(22,56)" fill="none" stroke="#c8a040" stroke-width="1.2">
+      <path d="M 0 0 C 5 -8 14 -8 14 0 C 14 8 5 8 5 0 C 5 -4 10 -4 10 0"/>
+      <path d="M 14 0 L 26 0"/>
+      <circle cx="3" cy="0" r="1.5" fill="#c8a040"/>
+    </g>
+    <g transform="translate(598,56) scale(-1,1)" fill="none" stroke="#c8a040" stroke-width="1.2">
+      <path d="M 0 0 C 5 -8 14 -8 14 0 C 14 8 5 8 5 0 C 5 -4 10 -4 10 0"/>
+      <path d="M 14 0 L 26 0"/>
+      <circle cx="3" cy="0" r="1.5" fill="#c8a040"/>
+    </g>
+    <rect x="0" y="0" width="620" height="80" fill="url(#archGrad2)"/>
+    <rect y="77" width="620" height="3" fill="#a07828"/>
+  `,
+  blue: `
+    <defs>
+      <linearGradient id="archGradB" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#5a88c0"/>
+        <stop offset="40%" stop-color="#3a6098"/>
+        <stop offset="100%" stop-color="#1e3a68"/>
+      </linearGradient>
+      <linearGradient id="archGrad2B" x1="0" y1="0" x2="0.3" y2="1">
+        <stop offset="0%" stop-color="#80b8e8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </linearGradient>
+    </defs>
+    <rect width="620" height="80" fill="url(#archGradB)"/>
+    <rect y="0" width="620" height="3" fill="#80a8d0"/>
+    <path d="M 60 72 C 60 72 140 12 220 8 L 400 8 C 480 12 560 72 560 72 Z" fill="#0e1e38" stroke="#0a1628" stroke-width="1"/>
+    <path d="M 80 68 C 80 68 155 16 222 12 L 398 12 C 465 16 540 68 540 68" fill="none" stroke="rgba(140,200,255,0.25)" stroke-width="3"/>
+    <path d="M 20 76 C 20 76 90 18 185 10 L 435 10 C 530 18 600 76 600 76" fill="none" stroke="#c0d8f0" stroke-width="1.8"/>
+    <path d="M 20 78 C 20 78 90 22 185 14 L 435 14 C 530 22 600 78 600 78" fill="none" stroke="#6090c0" stroke-width="1" opacity="0.6"/>
+    <!-- Modernist bracket ornaments -->
+    <line x1="22" y1="48" x2="22" y2="68" stroke="#c0d8f0" stroke-width="1.5"/>
+    <line x1="22" y1="48" x2="50" y2="48" stroke="#c0d8f0" stroke-width="1.5"/>
+    <line x1="22" y1="68" x2="50" y2="68" stroke="#c0d8f0" stroke-width="1.5"/>
+    <circle cx="60" cy="58" r="5" fill="none" stroke="#c0d8f0" stroke-width="1.2"/>
+    <circle cx="60" cy="58" r="2" fill="#c0d8f0"/>
+    <line x1="598" y1="48" x2="598" y2="68" stroke="#c0d8f0" stroke-width="1.5"/>
+    <line x1="598" y1="48" x2="570" y2="48" stroke="#c0d8f0" stroke-width="1.5"/>
+    <line x1="598" y1="68" x2="570" y2="68" stroke="#c0d8f0" stroke-width="1.5"/>
+    <circle cx="560" cy="58" r="5" fill="none" stroke="#c0d8f0" stroke-width="1.2"/>
+    <circle cx="560" cy="58" r="2" fill="#c0d8f0"/>
+    <rect x="0" y="0" width="620" height="80" fill="url(#archGrad2B)"/>
+    <rect y="77" width="620" height="3" fill="#5888b8"/>
+  `,
+  brass: `
+    <defs>
+      <linearGradient id="archGradR" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#5a3010"/>
+        <stop offset="40%" stop-color="#3a1c08"/>
+        <stop offset="100%" stop-color="#200e04"/>
+      </linearGradient>
+      <linearGradient id="archGrad2R" x1="0" y1="0" x2="0.3" y2="1">
+        <stop offset="0%" stop-color="#d89040" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </linearGradient>
+    </defs>
+    <rect width="620" height="80" fill="url(#archGradR)"/>
+    <rect y="0" width="620" height="3" fill="#c87828"/>
+    <path d="M 60 72 C 60 72 140 12 220 8 L 400 8 C 480 12 560 72 560 72 Z" fill="#180a00" stroke="#100600" stroke-width="1"/>
+    <path d="M 80 68 C 80 68 155 16 222 12 L 398 12 C 465 16 540 68 540 68" fill="none" stroke="rgba(200,130,40,0.2)" stroke-width="3"/>
+    <path d="M 20 76 C 20 76 90 18 185 10 L 435 10 C 530 18 600 76 600 76" fill="none" stroke="#d89040" stroke-width="1.8"/>
+    <path d="M 20 78 C 20 78 90 22 185 14 L 435 14 C 530 22 600 78 600 78" fill="none" stroke="#8a5018" stroke-width="1" opacity="0.6"/>
+    <!-- Gear-like hexagon ornaments -->
+    <g transform="translate(40,58)" fill="none" stroke="#d89040" stroke-width="1.2">
+      <polygon points="0,-10 8.66,-5 8.66,5 0,10 -8.66,5 -8.66,-5" />
+      <polygon points="0,-6 5.2,-3 5.2,3 0,6 -5.2,3 -5.2,-3" />
+      <circle cx="0" cy="0" r="2.5" fill="#d89040"/>
+      <line x1="14" y1="0" x2="24" y2="0" stroke="#d89040" stroke-width="1"/>
+    </g>
+    <g transform="translate(580,58)" fill="none" stroke="#d89040" stroke-width="1.2">
+      <polygon points="0,-10 8.66,-5 8.66,5 0,10 -8.66,5 -8.66,-5" />
+      <polygon points="0,-6 5.2,-3 5.2,3 0,6 -5.2,3 -5.2,-3" />
+      <circle cx="0" cy="0" r="2.5" fill="#d89040"/>
+      <line x1="-14" y1="0" x2="-24" y2="0" stroke="#d89040" stroke-width="1"/>
+    </g>
+    <rect x="0" y="0" width="620" height="80" fill="url(#archGrad2R)"/>
+    <rect y="77" width="620" height="3" fill="#a06020"/>
+  `,
+  noir: `
+    <defs>
+      <linearGradient id="archGradN" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#282828"/>
+        <stop offset="40%" stop-color="#141414"/>
+        <stop offset="100%" stop-color="#080808"/>
+      </linearGradient>
+      <linearGradient id="archGrad2N" x1="0" y1="0" x2="0.3" y2="1">
+        <stop offset="0%" stop-color="#d4aa48" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </linearGradient>
+    </defs>
+    <rect width="620" height="80" fill="url(#archGradN)"/>
+    <rect y="0" width="620" height="3" fill="#d4aa48"/>
+    <path d="M 60 72 C 60 72 140 12 220 8 L 400 8 C 480 12 560 72 560 72 Z" fill="#040404" stroke="#020202" stroke-width="1"/>
+    <path d="M 80 68 C 80 68 155 16 222 12 L 398 12 C 465 16 540 68 540 68" fill="none" stroke="rgba(212,170,72,0.15)" stroke-width="3"/>
+    <path d="M 20 76 C 20 76 90 18 185 10 L 435 10 C 530 18 600 76 600 76" fill="none" stroke="#d4aa48" stroke-width="1.8"/>
+    <path d="M 20 78 C 20 78 90 22 185 14 L 435 14 C 530 22 600 78 600 78" fill="none" stroke="#887830" stroke-width="1" opacity="0.6"/>
+    <!-- Art Deco fan ornaments -->
+    <g transform="translate(40,72)">
+      <line x1="0" y1="0" x2="0" y2="-22" stroke="#d4aa48" stroke-width="1"/>
+      <line x1="0" y1="0" x2="-10" y2="-20" stroke="#d4aa48" stroke-width="1"/>
+      <line x1="0" y1="0" x2="10" y2="-20" stroke="#d4aa48" stroke-width="1"/>
+      <line x1="0" y1="0" x2="-18" y2="-14" stroke="#d4aa48" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="18" y2="-14" stroke="#d4aa48" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="-24" y2="-6" stroke="#d4aa48" stroke-width="0.6"/>
+      <line x1="0" y1="0" x2="24" y2="-6" stroke="#d4aa48" stroke-width="0.6"/>
+      <circle cx="0" cy="0" r="3" fill="#d4aa48"/>
+    </g>
+    <g transform="translate(580,72)">
+      <line x1="0" y1="0" x2="0" y2="-22" stroke="#d4aa48" stroke-width="1"/>
+      <line x1="0" y1="0" x2="-10" y2="-20" stroke="#d4aa48" stroke-width="1"/>
+      <line x1="0" y1="0" x2="10" y2="-20" stroke="#d4aa48" stroke-width="1"/>
+      <line x1="0" y1="0" x2="-18" y2="-14" stroke="#d4aa48" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="18" y2="-14" stroke="#d4aa48" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="-24" y2="-6" stroke="#d4aa48" stroke-width="0.6"/>
+      <line x1="0" y1="0" x2="24" y2="-6" stroke="#d4aa48" stroke-width="0.6"/>
+      <circle cx="0" cy="0" r="3" fill="#d4aa48"/>
+    </g>
+    <rect x="0" y="0" width="620" height="80" fill="url(#archGrad2N)"/>
+    <rect y="77" width="620" height="3" fill="#d4aa48"/>
+  `
+};
+
+/* ══ THEME SWITCHER ══ */
+const machine = document.getElementById('machine');
+const archSvg = document.getElementById('arch-svg');
+let currentTheme = 'brass';
+
+function setTheme(theme) {
+  currentTheme = theme;
+  machine.dataset.theme = (theme === 'default') ? '' : theme;
+  archSvg.innerHTML = ARCHES[theme] || ARCHES.brass;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('btn-' + theme);
+  if (btn) btn.classList.add('active');
+}
+
+/* ══ KEYBOARD ══ */
+const ROWS = [
+  { keys:['1','2','3','4','5','6','7','8','9','0','-','='], stagger:0  },
+  { keys:['Q','W','E','R','T','Y','U','I','O','P','[',']'], stagger:14 },
+  { keys:['A','S','D','F','G','H','J','K','L',';','"'],     stagger:22 },
+  { keys:['Z','X','C','V','B','N','M',',','.','?'],         stagger:32 },
+]
+const kb=document.getElementById('keyboard'), keyEls={}
+ROWS.forEach(({keys,stagger})=>{
+  const row=document.createElement('div'); row.className='key-row'
+  row.style.paddingLeft=stagger+'px'
+  keys.forEach(k=>{
+    const el=document.createElement('div'); el.className='key'
+    el.innerHTML=`<span>${k}</span>`; row.appendChild(el); keyEls[k]=el
+  }); kb.appendChild(row)
+})
+const spRow=document.createElement('div'); spRow.className='space-row'
+const sk1=document.createElement('div'); sk1.className='fn-key'; keyEls['CTRL']=sk1
+const sp=document.createElement('div');  sp.className='spacebar';  keyEls['SPACE']=sp
+const sk2=document.createElement('div'); sk2.className='fn-key'; keyEls['ALT']=sk2
+spRow.append(sk1,sp,sk2); kb.appendChild(spRow)
+
+let audioCtx=null
+const ROW_MAP={'1':3,'2':3,'3':3,'4':3,'5':3,'6':3,'7':3,'8':3,'9':3,'0':3,'-':3,'=':3,'q':2,'w':2,'e':2,'r':2,'t':2,'y':2,'u':2,'i':2,'o':2,'p':2,'[':2,']':2,'a':1,'s':1,'d':1,'f':1,'g':1,'h':1,'j':1,'k':1,'l':1,';':1,'"':1,'enter':1,'z':0,'x':0,'c':0,'v':0,'b':0,'n':0,'m':0,',':0,'.':0,'?':0,'backspace':0,' ':0}
+const HPF=[300,650,1000,1400],DECAY=[0.07,0.055,0.045,0.035]
+function playClick(key){
+  if(!audioCtx) audioCtx=new AudioContext()
+  const row=ROW_MAP[key.toLowerCase()]??1
+  const sz=Math.floor(audioCtx.sampleRate*0.05)
+  const buf=audioCtx.createBuffer(1,sz,audioCtx.sampleRate)
+  const d=buf.getChannelData(0);const dec=DECAY[row]
+  for(let i=0;i<sz;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(sz*(dec/0.05)))
+  const src=audioCtx.createBufferSource();src.buffer=buf
+  const hpf=audioCtx.createBiquadFilter();hpf.type='highpass';hpf.frequency.value=HPF[row]
+  const g=audioCtx.createGain()
+  g.gain.setValueAtTime(row===0?.5:.35,audioCtx.currentTime)
+  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dec)
+  src.connect(hpf);hpf.connect(g);g.connect(audioCtx.destination);src.start()
+}
+function updatePaper(val){document.getElementById('txt').textContent=val}
+const timers={}
+function pressKey(dk){const el=keyEls[dk];if(!el)return
+  el.classList.add('pressed');clearTimeout(timers[dk])
+  timers[dk]=setTimeout(()=>el.classList.remove('pressed'),150)}
+function codeToKey(code){
+  const l=code?.match(/^Key([A-Z])$/);if(l)return l[1]
+  const n=code?.match(/^Digit(\d)$/);if(n)return n[1]
+  const m={Space:'SPACE',Minus:'-',Equal:'=',BracketLeft:'[',BracketRight:']',Semicolon:';',Quote:'"',Comma:',',Period:'.',Slash:'?'}
+  return m[code]??null
+}
+const hidden=document.getElementById('hidden')
+document.body.addEventListener('click',()=>hidden.focus()); hidden.focus()
+hidden.addEventListener('keydown',e=>{
+  const key=e.key
+  if(key.length===1||key==='Enter'||key==='Backspace') playClick(key)
+  const dk=codeToKey(e.code)||(key===' '?'SPACE':key.length===1?key.toUpperCase():null)
+  if(dk) pressKey(dk)
+})
+hidden.addEventListener('input',()=>updatePaper(hidden.value))
+// init default theme visuals
+archSvg.innerHTML = ARCHES.brass;
+document.getElementById('btn-brass').classList.add('active');
+updatePaper('')
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import NavMenu from '../components/NavMenu'
 import { submitComplaint } from '../actions'
@@ -14,6 +14,59 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
+
+  // Keyboard row → pitch multiplier (higher row = higher pitch, like a real typewriter)
+  const KEY_ROW: Record<string, number> = {
+    // Number row — highest
+    '`':4,'1':4,'2':4,'3':4,'4':4,'5':4,'6':4,'7':4,'8':4,'9':4,'0':4,'-':4,'=':4,
+    // QWERTY row
+    'q':3,'w':3,'e':3,'r':3,'t':3,'y':3,'u':3,'i':3,'o':3,'p':3,'[':3,']':3,'\\':3,
+    // ASDF row
+    'a':2,'s':2,'d':2,'f':2,'g':2,'h':2,'j':2,'k':2,'l':2,';':2,"'":2,'Enter':2,
+    // ZXCV row
+    'z':1,'x':1,'c':1,'v':1,'b':1,'n':1,'m':1,',':1,'.':1,'/':1,'Backspace':1,
+    // Space bar — lowest thud
+    ' ':0,
+  }
+  const ROW_HPF  = [300, 550, 850, 1150, 1500] // Hz per row (0=space … 4=numbers)
+  const ROW_DECAY= [0.07, 0.06, 0.05, 0.04, 0.035] // seconds
+
+  const playTypewriterClick = useCallback((key: string) => {
+    if (typeof window === 'undefined') return
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext()
+    }
+    const ctx = audioCtxRef.current
+
+    const row   = KEY_ROW[key.toLowerCase()] ?? KEY_ROW[key] ?? 2
+    const hpfHz = ROW_HPF[row]
+    const decay = ROW_DECAY[row]
+
+    const bufferSize = Math.floor(ctx.sampleRate * 0.05)
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+    const data = buffer.getChannelData(0)
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * (decay / 0.05)))
+    }
+
+    const source = ctx.createBufferSource()
+    source.buffer = buffer
+
+    const hpf = ctx.createBiquadFilter()
+    hpf.type = 'highpass'
+    hpf.frequency.value = hpfHz
+
+    const gain = ctx.createGain()
+    gain.gain.setValueAtTime(row === 0 ? 0.5 : 0.35, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + decay)
+
+    source.connect(hpf)
+    hpf.connect(gain)
+    gain.connect(ctx.destination)
+    source.start()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handleSubmit(withEmail: boolean) {
     setLoading(true)
@@ -29,6 +82,10 @@ export default function SubmitPage() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    // Play click on every real keypress (skip modifier-only keys)
+    if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace') {
+      playTypewriterClick(e.key)
+    }
     if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing && content.trim()) {
       e.preventDefault()
       setStep(2)
