@@ -1,31 +1,22 @@
 import Link from 'next/link'
+import NavMenu from './components/NavMenu'
 
 export default function LandingPage() {
   return (
     <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* Nav */}
-      <nav className="site-nav">
-        <button className="menu-btn" aria-label="選單">☰</button>
-        <span className="site-brand">煩惱盒子</span>
-      </nav>
+      <NavMenu />
 
       {/* Main */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
-        <div style={{ maxWidth: 896, width: '100%', position: 'relative' }}>
-
-          {/* Tape on right card */}
-          <div className="tape" style={{
-            position: 'absolute', top: 8, left: '69%',
-            width: 84, height: 26,
-            transform: 'rotate(12deg)', zIndex: 10,
-          }} />
+        <div style={{ maxWidth: 896, width: '100%' }}>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
 
             {/* Card 1: Submit */}
             <Link href="/submit" style={{ textDecoration: 'none' }}>
-              <div style={{ position: 'relative', opacity: 0.88 }}>
+              <div className="landing-card" style={{ position: 'relative', opacity: 0.88 }}>
+                {/* Tape on card */}
                 <div className="tape" style={{
                   position: 'absolute', top: -14, left: '50%',
                   transform: 'translateX(-50%) rotate(-2deg)',
@@ -61,7 +52,13 @@ export default function LandingPage() {
 
             {/* Card 2: Browse */}
             <Link href="/browse" style={{ textDecoration: 'none' }}>
-              <div style={{ opacity: 0.88, transform: 'rotate(1.5deg)' }}>
+              <div className="landing-card" style={{ position: 'relative', opacity: 0.88, transform: 'rotate(1.5deg)' }}>
+                {/* Tape on card */}
+                <div className="tape" style={{
+                  position: 'absolute', top: -14, left: '50%',
+                  transform: 'translateX(-50%) rotate(2deg)',
+                  width: 84, height: 26, zIndex: 2,
+                }} />
                 <div className="glass-card" style={{
                   padding: '40px 24px 32px',
                   display: 'flex', flexDirection: 'column',

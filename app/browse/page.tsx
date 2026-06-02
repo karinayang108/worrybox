@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
+import NavMenu from '../components/NavMenu'
 import ReactionButton from './ReactionButton'
 
 const CATEGORIES = ['全部', '人際關係', '工作／學業', '科技／工具', '日常生活', '其他'] as const
@@ -35,8 +36,9 @@ async function getComplaints(category?: string) {
   const { data: complaints, error } = await query
   if (error || !complaints) return []
 
-  // Get reaction counts
   const ids = complaints.map(c => c.id)
+  if (ids.length === 0) return []
+
   const { data: reactions } = await supabase
     .from('reactions')
     .select('complaint_id')
@@ -61,28 +63,19 @@ interface PageProps {
 export default async function BrowsePage({ searchParams }: PageProps) {
   const { category } = await searchParams
   const complaints = await getComplaints(category)
-
-  // Tape rotation pattern
   const rotations = [-0.8, 0.6, -1.2, 0.4, -0.5, 1.0, -0.9, 0.7, -0.3, 0.8, -1.1, 0.5]
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-      className="browse-page">
+    /* Single park-bg on the outer container — one continuous background */
+    <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* Hero with park bg */}
-      <div className="park-bg" style={{ flexShrink: 0 }}>
-        <nav className="site-nav">
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <button className="menu-btn" aria-label="選單">☰</button>
-          </Link>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <span className="site-brand">煩惱盒子</span>
-          </Link>
-        </nav>
-        <div style={{
-          background: 'linear-gradient(rgba(20,25,20,0.38), rgba(20,25,20,0.5))',
-          padding: '36px 32px 32px', textAlign: 'center',
-        }}>
+      {/* Hero — gradient overlay only, no separate background */}
+      <div style={{
+        flexShrink: 0,
+        background: 'linear-gradient(rgba(20,25,20,0.42), rgba(20,25,20,0.52))',
+      }}>
+        <NavMenu />
+        <div style={{ textAlign: 'center', padding: '20px 32px 28px' }}>
           <h1 style={{
             fontFamily: 'var(--font-serif)',
             fontSize: 40, fontWeight: 700, color: '#fff',
@@ -91,14 +84,14 @@ export default async function BrowsePage({ searchParams }: PageProps) {
           <p style={{
             fontFamily: 'var(--font-sans)',
             fontSize: 15, color: 'rgba(255,255,255,0.72)',
-          }}>在這些碎紙片中，或許你會發現自己並不孤單。</p>
+          }}>在這些碎紙片中，或許你會發現自己並不孤單，或許你也可以找到你的靈感。</p>
         </div>
       </div>
 
-      {/* Scrollable body over park bg */}
+      {/* Scrollable body — transparent so park-bg shows through */}
       <div style={{
         flex: 1, overflowY: 'auto',
-        background: 'url(/bg.jpg) center / cover no-repeat fixed',
+        background: 'transparent',
         padding: '24px 24px 0',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -118,11 +111,11 @@ export default async function BrowsePage({ searchParams }: PageProps) {
             ))}
           </div>
 
-          {/* Cards grid */}
+          {/* Cards grid or empty state */}
           {complaints.length === 0 ? (
             <div style={{
               textAlign: 'center', padding: '60px 24px',
-              fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.7)', fontSize: 16,
+              fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.75)', fontSize: 16,
             }}>
               這個分類還沒有煩惱，快去投遞第一個吧 🌿
             </div>
@@ -139,7 +132,6 @@ export default async function BrowsePage({ searchParams }: PageProps) {
                   className="worry-card"
                   style={{ transform: `rotate(${rotations[i % rotations.length]}deg)` }}
                 >
-                  {/* Tape */}
                   <div className="tape" style={{
                     position: 'absolute', top: -12,
                     left: i % 3 === 2 ? '45%' : '50%',
@@ -183,17 +175,17 @@ export default async function BrowsePage({ searchParams }: PageProps) {
             }}>翻閱更多碎紙片...</button>
           </div>
         </div>
-
-        {/* Footer inside scroll area */}
-        <footer className="white-footer">
-          <div className="wf-links">
-            <span className="wf-link">隱私權政策</span>
-            <span className="wf-link">匿名條款</span>
-            <span className="wf-link">聯繫我們</span>
-          </div>
-          <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
-        </footer>
       </div>
+
+      {/* Footer — outside scroll area, always pinned at bottom */}
+      <footer className="white-footer">
+        <div className="wf-links">
+          <span className="wf-link">隱私權政策</span>
+          <span className="wf-link">匿名條款</span>
+          <span className="wf-link">聯繫我們</span>
+        </div>
+        <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+      </footer>
     </div>
   )
 }

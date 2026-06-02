@@ -210,6 +210,15 @@ body {
     inset 0 0 0 1px rgba(200,185,160,0.18);
 }
 
+/* ── Landing card hover lift ── */
+.landing-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  display: block;
+}
+.landing-card:hover {
+  transform: translateY(-10px);
+}
+
 /* ── Frosted glass card (landing) ── */
 .glass-card {
   background: rgba(252,250,242,0.88);

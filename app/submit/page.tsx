@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
+import NavMenu from '../components/NavMenu'
 import { submitComplaint } from '../actions'
 
 type Step = 1 | 2 | 3 | 'done'
@@ -28,11 +29,34 @@ export default function SubmitPage() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Enter' && e.shiftKey === false && content.trim()) {
+    // Shift+Enter = new line; Enter alone (with content) = advance to step 2
+    if (e.key === 'Enter' && !e.shiftKey && content.trim()) {
       e.preventDefault()
       setStep(2)
     }
   }
+
+  const wfFooter = (
+    <div className="white-footer" style={{ position: 'relative', zIndex: 1, marginTop: -56 }}>
+      <div className="wf-links">
+        <span className="wf-link">隱私權政策</span>
+        <span className="wf-link">匿名條款</span>
+        <span className="wf-link">聯繫我們</span>
+      </div>
+      <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+    </div>
+  )
+
+  const stdFooter = (
+    <footer className="white-footer">
+      <div className="wf-links">
+        <span className="wf-link">隱私權政策</span>
+        <span className="wf-link">匿名條款</span>
+        <span className="wf-link">聯繫我們</span>
+      </div>
+      <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+    </footer>
+  )
 
   return (
     <div style={{ minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -40,14 +64,7 @@ export default function SubmitPage() {
       {/* ── STEP 1 ── */}
       {step === 1 && (
         <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <nav className="site-nav">
-            <Link href="/" style={{ textDecoration: 'none' }}>
-              <button className="menu-btn" aria-label="選單">☰</button>
-            </Link>
-            <Link href="/" style={{ textDecoration: 'none' }}>
-              <span className="site-brand">煩惱盒子</span>
-            </Link>
-          </nav>
+          <NavMenu />
 
           {/* Title */}
           <div style={{ textAlign: 'center', padding: '16px 24px 0', flexShrink: 0 }}>
@@ -64,16 +81,20 @@ export default function SubmitPage() {
             </p>
           </div>
 
-          {/* Typewriter + paper */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', width: '100%' }}>
+          {/* Typewriter + paper zone */}
+          <div style={{
+            flex: 1, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'flex-end',
+            position: 'relative', width: '100%',
+          }}>
 
-            {/* ENTER key — bottom right of typewriter */}
+            {/* ENTER key — bottom right near typewriter */}
             <div style={{
               position: 'absolute',
               right: 'calc(50% - 340px)',
               bottom: 'calc(var(--footer-h) + 8px)',
               display: 'flex', flexDirection: 'column',
-              alignItems: 'center', gap: 6, zIndex: 10,
+              alignItems: 'center', gap: 6, zIndex: 20,
             }}>
               <span style={{
                 fontFamily: 'var(--font-sans)', fontSize: 11,
@@ -95,7 +116,7 @@ export default function SubmitPage() {
             {/* Typewriter assembly */}
             <div style={{ maxWidth: 560, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-              {/* Paper */}
+              {/* Paper — z-index 4 so it's above the typewriter image */}
               <div style={{
                 width: 360,
                 backgroundColor: 'var(--paper-bg)',
@@ -103,13 +124,15 @@ export default function SubmitPage() {
                 border: '1px solid rgba(220,210,190,0.6)',
                 boxShadow: '2px 0 6px -2px rgba(0,0,0,0.08), -2px 0 6px -2px rgba(0,0,0,0.08), 0 -2px 4px rgba(0,0,0,0.05)',
                 padding: '16px 28px 20px',
-                position: 'relative', zIndex: 2,
+                position: 'relative', zIndex: 4,
                 marginBottom: -160,
               }}>
                 <div style={{
                   position: 'absolute', left: 44, top: 0, bottom: 0,
                   width: 1, background: 'rgba(220,160,160,0.25)',
+                  pointerEvents: 'none',
                 }} />
+                {/* Textarea — z-index 5, always on top */}
                 <textarea
                   ref={textareaRef}
                   value={content}
@@ -122,11 +145,12 @@ export default function SubmitPage() {
                     resize: 'none',
                     fontFamily: 'var(--font-sans)', fontSize: 15,
                     color: '#3a2a1e', lineHeight: '28px', paddingLeft: 6,
+                    position: 'relative', zIndex: 5,
                   }}
                 />
               </div>
 
-              {/* Typewriter image */}
+              {/* Typewriter image — pointer-events none so it never blocks the paper */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/typewriter.png"
@@ -134,30 +158,20 @@ export default function SubmitPage() {
                 style={{
                   width: 560, position: 'relative', zIndex: 3,
                   filter: 'drop-shadow(0 12px 28px rgba(0,0,0,0.5))',
+                  pointerEvents: 'none',
                 }}
               />
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="white-footer" style={{ position: 'relative', zIndex: 1, marginTop: -56 }}>
-            <div className="wf-links">
-              <span className="wf-link">隱私權政策</span>
-              <span className="wf-link">匿名條款</span>
-              <span className="wf-link">聯繫我們</span>
-            </div>
-            <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
-          </div>
+          {wfFooter}
         </div>
       )}
 
       {/* ── STEP 2 ── */}
       {step === 2 && (
         <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <nav className="site-nav">
-            <button className="menu-btn" onClick={() => setStep(1)} aria-label="返回">☰</button>
-            <span className="site-brand">煩惱盒子</span>
-          </nav>
+          <NavMenu />
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
             <div
@@ -218,24 +232,14 @@ export default function SubmitPage() {
               </div>
             </div>
           </div>
-
-          <footer className="white-footer">
-            <div className="wf-links">
-              <span className="wf-link">隱私權政策</span>
-              <span className="wf-link">匿名條款</span>
-              <span className="wf-link">聯繫我們</span>
-            </div>
-            <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
-          </footer>
+          {stdFooter}
         </div>
       )}
 
       {/* ── STEP 3 ── */}
       {step === 3 && (
         <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <nav className="site-nav">
-            <span className="site-brand">煩惱盒子</span>
-          </nav>
+          <NavMenu />
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
             <div
@@ -302,24 +306,14 @@ export default function SubmitPage() {
               >不用了，直接完成</button>
             </div>
           </div>
-
-          <footer className="white-footer">
-            <div className="wf-links">
-              <span className="wf-link">隱私權政策</span>
-              <span className="wf-link">匿名條款</span>
-              <span className="wf-link">聯繫我們</span>
-            </div>
-            <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
-          </footer>
+          {stdFooter}
         </div>
       )}
 
       {/* ── DONE ── */}
       {step === 'done' && (
         <div className="park-bg" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <nav className="site-nav">
-            <span className="site-brand">煩惱盒子</span>
-          </nav>
+          <NavMenu />
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
             <div
@@ -353,15 +347,7 @@ export default function SubmitPage() {
               </Link>
             </div>
           </div>
-
-          <footer className="white-footer">
-            <div className="wf-links">
-              <span className="wf-link">隱私權政策</span>
-              <span className="wf-link">匿名條款</span>
-              <span className="wf-link">聯繫我們</span>
-            </div>
-            <div className="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
-          </footer>
+          {stdFooter}
         </div>
       )}
     </div>
