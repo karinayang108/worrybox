@@ -3,6 +3,8 @@ import Link from 'next/link'
 import NavMenu from '../components/NavMenu'
 import ReactionButton from './ReactionButton'
 
+export const revalidate = 60
+
 const CATEGORIES = ['全部', '人際關係', '工作/學業', '科技/工具', '日常生活', '其他'] as const
 
 function timeAgo(dateStr: string): string {
@@ -24,7 +26,7 @@ async function getComplaints(category?: string) {
 
   let query = supabase
     .from('complaints')
-    .select('id, content, category, created_at')
+    .select('id, content, category, created_at, reactions(count)')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(12)
@@ -36,22 +38,9 @@ async function getComplaints(category?: string) {
   const { data: complaints, error } = await query
   if (error || !complaints) return []
 
-  const ids = complaints.map(c => c.id)
-  if (ids.length === 0) return []
-
-  const { data: reactions } = await supabase
-    .from('reactions')
-    .select('complaint_id')
-    .in('complaint_id', ids)
-
-  const counts = (reactions || []).reduce<Record<string, number>>((acc, r) => {
-    acc[r.complaint_id] = (acc[r.complaint_id] || 0) + 1
-    return acc
-  }, {})
-
   return complaints.map((c, i) => ({
     ...c,
-    reactionCount: counts[c.id] || 0,
+    reactionCount: (c.reactions as unknown as { count: number }[])[0]?.count ?? 0,
     index: i,
   }))
 }
