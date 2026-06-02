@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>煩惱盒子 Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=ABeeZee&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'ABeeZee', sans-serif; }
+
+/* ── Preview Nav ── */
+.pnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+  display: flex; gap: 6px; padding: 8px 14px;
+}
+.pnav button {
+  padding: 5px 14px; border: 1px solid #555; border-radius: 20px;
+  background: transparent; color: #ccc; cursor: pointer; font-size: 12px;
+}
+.pnav button.active { background: #fff; color: #111; border-color: #fff; }
+
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ── Background ── */
+.park-bg {
+  background:
+    linear-gradient(rgba(25,28,28,0.1), rgba(25,28,28,0.08)),
+    url('bg.jpg') center/cover no-repeat;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════
+   PAGE 1 · LANDING
+══════════════════════════ */
+#landing { position: relative; }
+
+.landing-wrap {
+  display: flex; flex-direction: column;
+  height: 100vh; padding-top: 44px; overflow: hidden;
+}
+
+/* ── Shared site nav ── */
+.site-nav {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 28px; flex-shrink: 0;
+}
+.menu-btn {
+  background: none; border: none; cursor: pointer;
+  color: #fff; font-size: 20px; line-height: 1;
+  padding: 2px 4px; opacity: 0.88;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  transition: opacity 0.15s;
+}
+.menu-btn:hover { opacity: 1; }
+.site-brand {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px; color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ── Shared white footer — defined later, placeholder here ── */
+
+/* ── Typewriter key — fixed bottom-right near typewriter ── */
+.tw-key-float {
+  position: absolute;
+  right: calc(50% - 340px);
+  bottom: 76px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  z-index: 10;
+  text-align: center;
+}
+.tw-key-hint {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 11px; color: #fff;
+  letter-spacing: 0.06em; white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.tw-key-btn {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(160deg, #c8a878 0%, #a07848 40%, #7a5830 100%);
+  border: none; cursor: pointer;
+  box-shadow:
+    0 5px 0 #4a3018,
+    0 7px 12px rgba(0,0,0,0.55),
+    inset 0 2px 3px rgba(255,255,255,0.18),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #2a1808; line-height: 1.2;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.tw-key-btn:hover {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #4a3018, 0 4px 8px rgba(0,0,0,0.45),
+    inset 0 2px 3px rgba(255,255,255,0.18), inset 0 -2px 4px rgba(0,0,0,0.25);
+}
+.tw-key-btn:active {
+  transform: translateY(5px);
+  box-shadow: 0 0px 0 #4a3018, 0 2px 4px rgba(0,0,0,0.3),
+    inset 0 2px 6px rgba(0,0,0,0.25);
+}
+.tw-key-enter { font-size: 22px; margin-bottom: 0; line-height: 1; }
+.tw-key-label { font-family: 'ABeeZee', sans-serif; font-size: 8px; letter-spacing: 0.12em; font-weight: bold; }
+
+/* Top nav old */
+.top-nav {
+  padding: 16px 32px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px; color: #fff;
+}
+
+/* Main cards area */
+.cards-area {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 32px;
+}
+
+.cards-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 48px; max-width: 896px; width: 100%;
+  position: relative;
+}
+
+/* Masking tape on right card */
+.tape-right {
+  position: absolute; top: 8px; left: 68%;
+  width: 84px; height: 28px;
+  background: rgba(233,226,211,0.45);
+  transform: rotate(12deg);
+  backdrop-filter: blur(2px);
+  z-index: 10;
+}
+
+/* Individual card */
+.landing-card {
+  position: relative; opacity: 0.88;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.landing-card:hover { opacity: 1; transform: translateY(-3px); }
+
+.card-tape {
+  position: absolute; top: -16px; left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 97px; height: 26px;
+  background: rgba(233,226,211,0.45);
+  backdrop-filter: blur(2px);
+  z-index: 2;
+}
+
+.card-inner {
+  background: rgb(252,250,242);
+  border: 1px solid rgba(220,193,177,0.3);
+  box-shadow: 2px 4px 6px rgba(114,90,66,0.15);
+  padding: 40px 24px 32px;
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center; gap: 12px;
+}
+.card-right .card-inner { transform: rotate(1.5deg); }
+
+.card-icon { width: 36px; height: 36px; object-fit: contain; margin-bottom: 4px; }
+.card-icon-placeholder {
+  width: 36px; height: 36px; margin-bottom: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+
+.card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 32px; font-weight: 700;
+  color: #725a42; line-height: 1.4;
+}
+
+.card-desc {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; color: #564337;
+  line-height: 1.7; letter-spacing: -0.02em;
+  max-width: 260px;
+}
+
+.card-btn {
+  margin-top: 8px; padding: 8px 24px;
+  border: none; border-radius: 4px; cursor: pointer;
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; letter-spacing: 0.05em;
+  color: #fff; box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+  transition: opacity 0.15s;
+}
+.card-btn:hover { opacity: 0.88; }
+.btn-orange { background: #e67e22; }
+.btn-brown  { background: #725a42; }
+
+/* Anonymity note */
+.anon-wrap {
+  max-width: 576px; width: 100%;
+  margin-top: 48px;
+}
+.anon-box {
+  backdrop-filter: blur(6px);
+  background: rgba(233,226,211,0.8);
+  border: 1px solid rgba(220,193,177,0.3);
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  padding: 25px 33px; text-align: center;
+}
+.anon-text {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 16px; color: #696458;
+  letter-spacing: -0.02em; line-height: 1.7;
+}
+.anon-cursor {
+  display: inline-block; width: 8px; height: 19px;
+  background: #696458; vertical-align: middle; margin-left: 2px;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Footer */
+.site-footer {
+  padding: 24px 32px 32px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+}
+.footer-links { display: flex; gap: 24px; }
+.footer-link {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; color: #564337;
+  opacity: 0.7; letter-spacing: 0.05em;
+  text-decoration: none; cursor: pointer;
+}
+.footer-copy {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 16px; color: #fff;
+  letter-spacing: -0.02em;
+}
+
+/* ══════════════════════════
+   PAGE 2 · SUBMIT
+══════════════════════════ */
+#submit { }
+
+.step { display: none; }
+.step.active { display: block; }
+
+/* Step 1: full-screen, no scroll */
+.submit-step1-page {
+  height: calc(100vh - 44px);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.submit-top-nav {
+  padding: 14px 32px; display: flex; align-items: center; gap: 8px;
+  font-family: 'Noto Serif TC', serif; font-size: 16px; color: #fff;
+  flex-shrink: 0;
+}
+
+/* Title block */
+.submit-title-block {
+  text-align: center; padding: 20px 24px 0; flex-shrink: 0;
+}
+.submit-heading {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 32px; font-weight: 700;
+  color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  margin-bottom: 8px;
+}
+.submit-subtext {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; color: rgba(255,255,255,0.8);
+  line-height: 1.7;
+}
+
+/* Typewriter + paper assembly — fills remaining space, anchored to bottom */
+.submit-bottom-zone {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end;
+  position: relative; width: 100%;
+}
+
+/* Typewriter assembly */
+.typewriter-assembly {
+  width: 100%; max-width: 560px;
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+}
+
+/* Paper coming out of typewriter */
+.writing-paper {
+  width: 360px;
+  background-color: #fffef8;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px, #e8e4db 28px
+  );
+  border: 1px solid rgba(220,210,190,0.6);
+  box-shadow: 2px 0 6px -2px rgba(0,0,0,0.08), -2px 0 6px -2px rgba(0,0,0,0.08),
+              0 -2px 4px rgba(0,0,0,0.05);
+  padding: 16px 28px 20px;
+  position: relative; z-index: 2;
+  margin-bottom: -160px; /* insert into typewriter */
+}
+.writing-paper::before {
+  content: ''; position: absolute; left: 44px; top: 0; bottom: 0;
+  width: 1px; background: rgba(220,160,160,0.25);
+}
+
+.paper-textarea {
+  width: 100%; min-height: 100px;
+  background: transparent; border: none; outline: none;
+  resize: none; font-family: 'ABeeZee', sans-serif;
+  font-size: 15px; color: #3a2a1e;
+  line-height: 28px; padding-left: 6px;
+}
+.paper-textarea::placeholder { color: #b8a898; }
+
+/* Submit hint — at bottom of paper */
+.paper-submit-hint {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 8px; padding-top: 8px; border-top: 1px dashed rgba(160,148,128,0.25);
+  margin-top: 4px;
+}
+.paper-submit-btn {
+  background: #725a42; color: #fff; border: none;
+  padding: 6px 18px; border-radius: 3px; cursor: pointer;
+  font-family: 'ABeeZee', sans-serif; font-size: 13px;
+  letter-spacing: 0.04em; transition: opacity 0.15s;
+}
+.paper-submit-btn:hover { opacity: 0.85; }
+.paper-enter-hint {
+  font-family: 'ABeeZee', sans-serif; font-size: 12px;
+  color: #b8a898; letter-spacing: 0.03em;
+}
+
+/* Typewriter image */
+.typewriter-img {
+  width: 560px;
+  position: relative; z-index: 3;
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.5));
+}
+
+/* White footer overlapped by typewriter */
+.submit-page-footer-wrap {
+  width: 100%; position: relative; flex-shrink: 0;
+}
+.submit-page-footer-wrap .typewriter-assembly {
+  position: relative; z-index: 2;
+}
+
+/* Step 2 & 3: full-screen centered */
+.submit-step-full {
+  height: calc(100vh - 44px);
+  display: flex; flex-direction: column;
+}
+.submit-step-full .park-bg-inner {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 40px 24px;
+}
+
+.submit-btn {
+  background: #e67e22; color: #fff; border: none;
+  padding: 10px 36px; border-radius: 4px;
+  font-family: 'ABeeZee', sans-serif; font-size: 14px;
+  letter-spacing: 0.05em; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: opacity 0.15s;
+}
+.submit-btn:hover { opacity: 0.88; }
+
+/* ── Realistic paper shared ── */
+.paper-realistic-card {
+  background-color: #fffef5;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px, rgba(160,148,128,0.16) 28px
+  );
+  border-radius: 2px;
+  position: relative;
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.10),
+    0 2px 2px rgba(0,0,0,0.10),
+    0 4px 8px rgba(0,0,0,0.10),
+    0 8px 16px rgba(0,0,0,0.09),
+    0 20px 40px rgba(0,0,0,0.10),
+    0 32px 56px rgba(0,0,0,0.06),
+    inset 0 0 0 1px rgba(200,185,160,0.2),
+    inset 3px 0 0 rgba(200,150,150,0.15);
+}
+/* Curl shadow beneath */
+.paper-realistic-card::after {
+  content: ''; position: absolute;
+  bottom: -8px; left: 5%; right: 5%; height: 12px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.25) 0%, transparent 70%);
+  filter: blur(4px); z-index: -1;
+}
+
+/* Step 2 confirm */
+.confirm-page {
+  flex: 1; display: flex;
+  flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 24px;
+}
+.confirm-card {
+  padding: 36px 48px;
+  max-width: 520px; width: 100%; text-align: center;
+}
+.confirm-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 24px; font-weight: 700;
+  color: #725a42; margin-bottom: 8px;
+}
+.confirm-sub {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; color: #9b8878; margin-bottom: 24px;
+}
+.confirm-excerpt {
+  background: rgba(114,90,66,0.06);
+  border-left: 3px solid #725a42;
+  padding: 16px 20px; border-radius: 0 4px 4px 0;
+  text-align: left; margin-bottom: 32px;
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 15px; color: #3a2a1e; line-height: 1.8;
+  font-style: italic;
+}
+.confirm-btns { display: flex; gap: 16px; justify-content: center; }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(114,90,66,0.3);
+  color: #725a42; padding: 10px 28px;
+  border-radius: 4px; cursor: pointer;
+  font-family: 'ABeeZee', sans-serif; font-size: 14px;
+}
+
+/* Step 3 email */
+.email-page {
+  flex: 1; display: flex;
+  flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 24px;
+}
+.email-card {
+  padding: 32px 48px;
+  max-width: 480px; width: 100%; text-align: center;
+}
+.email-icon { font-size: 2.5rem; margin-bottom: 16px; }
+.email-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px; font-weight: 700;
+  color: #725a42; margin-bottom: 10px;
+}
+.email-sub {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; color: #9b8878; line-height: 1.8; margin-bottom: 24px;
+}
+.email-input {
+  width: 100%; padding: 10px 14px;
+  border: 1px solid rgba(220,193,177,0.6); border-radius: 4px;
+  background: rgba(255,255,255,0.7);
+  font-family: 'ABeeZee', sans-serif; font-size: 14px;
+  color: #3a2a1e; outline: none; margin-bottom: 12px;
+}
+.email-input:focus { border-color: #e67e22; }
+.email-submit-btn {
+  width: 100%; background: #e67e22; color: #fff;
+  border: none; padding: 12px; border-radius: 4px;
+  font-family: 'ABeeZee', sans-serif; font-size: 14px;
+  cursor: pointer; margin-bottom: 12px;
+}
+.email-skip {
+  background: none; border: none; color: #9b8878;
+  font-size: 13px; cursor: pointer; font-family: 'ABeeZee', sans-serif;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ══════════════════════════
+   PAGE 3 · BROWSE
+══════════════════════════ */
+#browse {
+  background:
+    url('bg.jpg') center/cover no-repeat fixed;
+  min-height: 100vh;
+}
+
+.browse-hero {
+  background: linear-gradient(rgba(20,25,20,0.38), rgba(20,25,20,0.5));
+  padding: 48px 32px 36px;
+  text-align: center;
+}
+.browse-hero-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 40px; font-weight: 700;
+  color: #fff; margin-bottom: 8px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.browse-hero-sub {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 15px; color: rgba(255,255,255,0.72);
+}
+
+.browse-body {
+  max-width: 1200px; margin: 0 auto; padding: 24px 24px 0;
+  background: transparent;
+}
+
+/* Category filter */
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+.filter-pill {
+  padding: 6px 20px; border-radius: 6px;
+  border: 1.5px solid #b8a888;
+  background: rgba(252,250,242,0.9); color: #564337;
+  font-family: 'ABeeZee', sans-serif; font-size: 13px;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.03em;
+}
+.filter-pill.active {
+  background: #5c3d1e !important; color: #fff !important; border-color: #5c3d1e !important;
+}
+.filter-pill:hover:not(.active) { background: rgb(252,250,242); }
+
+/* Cards masonry grid */
+.cards-masonry {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px; margin-bottom: 32px;
+  align-items: start;
+}
+
+/* Floating paper cards */
+.worry-card {
+  background-color: #fffef5;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px, rgba(160,148,128,0.14) 28px
+  );
+  padding: 20px 20px 16px;
+  cursor: pointer;
+  position: relative;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.14),
+    0 6px 12px rgba(0,0,0,0.13),
+    0 14px 28px rgba(0,0,0,0.10),
+    0 24px 40px rgba(0,0,0,0.07),
+    inset 0 0 0 1px rgba(200,185,160,0.18);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.worry-card::after {
+  content: ''; position: absolute;
+  bottom: -7px; left: 8%; right: 8%; height: 10px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.2) 0%, transparent 70%);
+  filter: blur(4px); z-index: -1;
+}
+.worry-card:nth-child(1) { transform: rotate(-0.8deg); }
+.worry-card:nth-child(2) { transform: rotate(0.6deg);  }
+.worry-card:nth-child(3) { transform: rotate(-1.2deg); }
+.worry-card:nth-child(4) { transform: rotate(0.4deg);  }
+.worry-card:nth-child(5) { transform: rotate(-0.5deg); }
+.worry-card:nth-child(6) { transform: rotate(1.0deg);  }
+.worry-card:hover {
+  transform: rotate(0deg) translateY(-5px) !important;
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.15),
+    0 12px 24px rgba(0,0,0,0.14),
+    0 24px 48px rgba(0,0,0,0.10),
+    inset 0 0 0 1px rgba(200,185,160,0.18);
+}
+
+/* Filter pills on park bg */
+.filter-bar { padding: 8px 0; }
+.filter-pill {
+  backdrop-filter: blur(6px) !important;
+  background: rgba(252,250,242,0.88) !important;
+}
+
+.card-meta {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 12px; color: #b8a888;
+  margin-bottom: 12px; letter-spacing: 0.02em;
+}
+
+.card-body {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px; color: #3a2a1e;
+  line-height: 1.85; margin-bottom: 16px;
+}
+
+.card-actions {
+  display: flex; align-items: center; gap: 12px;
+}
+.react-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(252,250,242,0.9);
+  border: 1.5px solid #b8a888; border-radius: 4px;
+  padding: 6px 16px; cursor: pointer;
+  font-family: 'ABeeZee', sans-serif; font-size: 13px;
+  color: #564337; transition: all 0.15s;
+}
+.react-btn:hover, .react-btn.reacted {
+  background: #e67e22; color: #fff; border-color: #e67e22;
+}
+.react-count {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 12px; color: #b8a888;
+}
+
+/* Tape on worry cards */
+.card-tape-browse {
+  position: absolute;
+  top: -12px; left: 50%;
+  transform: translateX(-50%) rotate(-1.5deg);
+  width: 88px; height: 22px;
+  background: rgba(233,226,211,0.55);
+  backdrop-filter: blur(2px);
+  z-index: 10;
+  pointer-events: none;
+}
+.worry-card:nth-child(even) .card-tape-browse  { transform: translateX(-50%) rotate(1.8deg); }
+.worry-card:nth-child(3n)   .card-tape-browse  { transform: translateX(-45%) rotate(-0.5deg); width: 72px; }
+
+/* Load more */
+.load-more-wrap { display: flex; justify-content: center; }
+.load-more-btn {
+  background: rgba(252,250,242,0.9);
+  border: 1.5px solid #b8a888; border-radius: 6px;
+  padding: 12px 48px; cursor: pointer;
+  font-family: 'ABeeZee', sans-serif; font-size: 14px;
+  color: #564337; letter-spacing: 0.03em;
+  transition: all 0.15s;
+}
+.load-more-btn:hover { background: #fffef8; border-color: #725a42; color: #725a42; }
+
+/* White footer — all pages UNIFIED */
+.white-footer {
+  background: #fff;
+  height: 76px; min-height: 76px;
+  padding: 0 32px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  border-top: 1px solid rgba(220,193,177,0.15);
+  flex-shrink: 0;
+}
+.wf-links { display: flex; gap: 24px; }
+.wf-link {
+  font-family: 'ABeeZee', sans-serif; font-size: 14px;
+  color: #564337; opacity: 0.7; letter-spacing: 0.05em; cursor: pointer;
+}
+.wf-copy {
+  font-family: 'ABeeZee', sans-serif; font-size: 12px;
+  color: rgba(86,67,55,0.4); letter-spacing: -0.01em;
+}
+
+/* Submit page: typewriter overlaps white footer */
+.submit-tw-footer-wrap {
+  position: relative; z-index: 2;
+}
+.submit-tw-footer-wrap .typewriter-assembly {
+  position: relative; z-index: 3;
+}
+.submit-tw-footer-wrap .white-footer {
+  margin-top: -80px;
+  padding-top: 96px;
+  position: relative; z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<!-- Preview Nav -->
+<nav class="pnav">
+  <button class="active" onclick="show('landing')">① Landing</button>
+  <button onclick="show('submit'); goStep(1)">② 投稿 Step 1</button>
+  <button onclick="show('submit'); goStep(2)">② 投稿 Step 2</button>
+  <button onclick="show('submit'); goStep(3)">② 投稿 Step 3</button>
+  <button onclick="show('browse')">③ 瀏覽</button>
+</nav>
+
+<!-- ══════════ PAGE 1: LANDING ══════════ -->
+<div id="landing" class="page active">
+  <div class="park-bg landing-wrap">
+    <nav class="site-nav"><button class="menu-btn">☰</button><span class="site-brand">煩惱盒子</span></nav>
+
+    <div class="cards-area">
+      <div class="cards-row">
+        <!-- Masking tape on right card -->
+        <div class="tape-right"></div>
+
+        <!-- Card 1: Submit -->
+        <div class="landing-card card-left" onclick="show('submit'); goStep(1)">
+          <div class="card-tape"></div>
+          <div class="card-inner">
+            <div class="card-icon-placeholder">✏️</div>
+            <div class="card-title">我今天有點煩</div>
+            <div class="card-desc">把不愉快的心事寫下來，<br>或是生活遇到了什麼讓你不便的設計<br>通通丟進盒子裡吧！</div>
+            <button class="card-btn btn-orange">開始書寫</button>
+          </div>
+        </div>
+
+        <!-- Card 2: Browse -->
+        <div class="landing-card card-right" onclick="show('browse')">
+          <div class="card-inner">
+            <div class="card-icon-placeholder">📖</div>
+            <div class="card-title">看看大家在煩什麼</div>
+            <div class="card-desc">翻閱那些被留下的隻字片語</div>
+            <button class="card-btn btn-brown">隨機翻閱</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anonymity note -->
+      <div class="anon-wrap">
+        <div class="anon-box">
+          <p class="anon-text">
+            這裡是匿名的。你說的話會留在這裡，<br>
+            也許有人懂你，甚至是幫你解決問題。<span class="anon-cursor"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="white-footer">
+      <div class="wf-links">
+        <span class="wf-link">隱私權政策</span>
+        <span class="wf-link">匿名條款</span>
+        <span class="wf-link">聯繫我們</span>
+      </div>
+      <div class="wf-copy">© 煩惱盒子 | 匿名傾訴空間 | 痛點靈感</div>
+    </footer>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 2: SUBMIT ══════════ -->
+<div id="submit" class="page">
+
+  <!-- Step 1: Write -->
+  <div id="step1" class="step active">
+    <div class="park-bg submit-step1-page">
+      <nav class="site-nav"><button class="menu-btn">☰</button><span class="site-brand">煩惱盒子</span></nav>
+      <div class="submit-title-block">
+        <h1 class="submit-heading">說說看，什麼讓你最近很煩？</h1>
+        <p class="submit-subtext">
+          生活中某件重複讓你覺得麻煩的事？
+          人與人之間讓你覺得累的事？
+          某個 App 或工具讓你用得很崩潰？
+        </p>
+      </div>
+      <div class="submit-bottom-zone">
+        <!-- ENTER key floats bottom-right near typewriter -->
+        <div class="tw-key-float">
+          <span class="tw-key-hint">寫好了嗎？</span>
+          <button class="tw-key-btn" onclick="goStep(2)">
+            <span class="tw-key-enter">↵</span>
+            <span class="tw-key-label">ENTER</span>
+          </button>
+        </div>
+        <div class="typewriter-assembly">
+          <div class="writing-paper">
+            <textarea class="paper-textarea" placeholder="在這裡開始打字..." id="worryText"></textarea>
+          </div>
+          <img class="typewriter-img" src="typewriter.png" alt="typewriter">
+        </div>
+      </div>
+      <!-- White footer overlapped by typewriter -->
+      <div class="white-footer" style="position:relative;z-index:1;margin-top:-56px;padding-top:0;">
+        <div class="wf-links">
+          <span class="wf-link">隱私權政策</span>
+          <span class="wf-link">匿名條款</span>
+          <span class="wf-link">聯繫我們</span>
+        </div>
+        <div class="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Confirm -->
+  <div id="step2" class="step">
+    <div class="park-bg submit-step-full">
+      <nav class="site-nav"><button class="menu-btn">☰</button><span class="site-brand">煩惱盒子</span></nav>
+      <div class="park-bg-inner">
+        <div class="confirm-card paper-realistic-card">
+          <div class="confirm-title">確定要把這個送出去嗎？</div>
+          <div class="confirm-sub">送出後無法刪除，但完全匿名 🔒</div>
+          <div class="confirm-excerpt">
+            「今天遇到一件事讓我很崩潰，一直覺得自己做什麼都不對…」
+          </div>
+          <div class="confirm-btns">
+            <button class="btn-ghost" onclick="goStep(1)">← 再改一下</button>
+            <button class="submit-btn" onclick="goStep(3)">確認送出 ✓</button>
+          </div>
+        </div>
+      </div>
+      <div class="white-footer">
+        <div class="wf-links">
+          <span class="wf-link">隱私權政策</span>
+          <span class="wf-link">匿名條款</span>
+          <span class="wf-link">聯繫我們</span>
+        </div>
+        <div class="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Email -->
+  <div id="step3" class="step">
+    <div class="park-bg submit-step-full">
+      <nav class="site-nav"><button class="menu-btn">☰</button><span class="site-brand">煩惱盒子</span></nav>
+      <div class="park-bg-inner">
+        <div class="email-card paper-realistic-card">
+          <div class="email-icon">✉️</div>
+          <div class="email-title">想收到一封回信嗎？</div>
+          <div class="email-sub">
+            留下 Email，我們也許會親自回覆你。<br>
+            不一定會收到，但我們會試試。<br>
+            <span style="font-size:12px;color:#c4b5a8">（Email 不會公開，只有我們看得到）</span>
+          </div>
+          <input class="email-input" type="email" placeholder="your@email.com">
+          <button class="email-submit-btn" onclick="show('browse')">好，等你的信 →</button>
+          <br>
+          <button class="email-skip" onclick="show('browse')">不用了，直接完成</button>
+        </div>
+      </div>
+      <div class="white-footer">
+        <div class="wf-links">
+          <span class="wf-link">隱私權政策</span>
+          <span class="wf-link">匿名條款</span>
+          <span class="wf-link">聯繫我們</span>
+        </div>
+        <div class="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ PAGE 3: BROWSE ══════════ -->
+<div id="browse" class="page" style="height:calc(100vh - 44px);overflow:hidden;display:flex;flex-direction:column;">
+  <nav class="site-nav" style="background:rgba(15,22,15,0.4);backdrop-filter:blur(4px);flex-shrink:0;"><button class="menu-btn">☰</button><span class="site-brand">煩惱盒子</span></nav>
+  <div class="browse-hero" style="padding-top:20px;padding-bottom:20px;">
+    <h1 class="browse-hero-title">看看大家在煩什麼</h1>
+    <p class="browse-hero-sub">在這些碎紙片中，或許你會發現自己並不孤單。</p>
+  </div>
+
+  <div class="browse-body" style="flex:1;overflow-y:auto;">
+    <!-- Filters -->
+    <div class="filter-bar">
+      <button class="filter-pill active" onclick="setFilter(this)">全部</button>
+      <button class="filter-pill" onclick="setFilter(this)">人際關係</button>
+      <button class="filter-pill" onclick="setFilter(this)">工作／學業</button>
+      <button class="filter-pill" onclick="setFilter(this)">科技／工具</button>
+      <button class="filter-pill" onclick="setFilter(this)">日常生活</button>
+      <button class="filter-pill" onclick="setFilter(this)">其他</button>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-masonry">
+      <div class="worry-card">
+        <div class="card-tape-browse"></div>
+        <div class="card-meta">#10294 — 2小時前</div>
+        <div class="card-body">最近總覺得，努力好像沒有盡頭。每天準時上下班，卻不知道生活是為了什麼。是不是大家都一樣在假裝快樂？</div>
+        <div class="card-actions">
+          <button class="react-btn" onclick="react(this)">🤍 我也有！</button>
+          <span class="react-count">24 人共鳴</span>
+        </div>
+      </div>
+
+      <div class="worry-card">
+        <div class="card-tape-browse"></div>
+        <div class="card-meta">#10288 — 5小時前</div>
+        <div class="card-body">不想社交，但又怕寂寞。每次聚會完回到家，那種空虛感真的好沉重。</div>
+        <div class="card-actions">
+          <button class="react-btn" onclick="react(this)">🤍 我也有！</button>
+          <span class="react-count">156 人共鳴</span>
+        </div>
+      </div>
+
+      <div class="worry-card">
+        <div class="card-tape-browse"></div>
+        <div class="card-meta">#10275 — 昨天</div>
+        <div class="card-body">爸媽總是在電話裡問我什麼時候買房，我連下個月的房租都還在發愁。</div>
+        <div class="card-actions">
+          <button class="react-btn" onclick="react(this)">🤍 我也有！</button>
+          <span class="react-count">89 人共鳴</span>
+        </div>
+      </div>
+
+      <div class="worry-card">
+        <div class="card-tape-browse"></div>
+        <div class="card-meta">#10260 — 2天前</div>
+        <div class="card-body">真的很討厭那些只會嘴上說說而不做事的人。為什麼總是我在收尾？</div>
+        <div class="card-actions">
+          <button class="react-btn" onclick="react(this)">🤍 我也有！</button>
+          <span class="react-count">42 人共鳴</span>
+        </div>
+      </div>
+
+      <div class="worry-card">
+        <div class="card-tape-browse"></div>
+        <div class="card-meta">#10255 — 3天前</div>
+        <div class="card-body">暗戀的人好像有對象了。心情就像被打翻的墨水，黑漆漆的一片。</div>
+        <div class="card-actions">
+          <button class="react-btn" onclick="react(this)">🤍 我也有！</button>
+          <span class="react-count">211 人共鳴</span>
+        </div>
+      </div>
+
+      <div class="worry-card">
+        <div class="card-tape-browse"></div>
+        <div class="card-meta">#10240 — 4天前</div>
+        <div class="card-body">家裡的貓生病了，醫療費好貴，但我只希望牠能好起來。看著牠受苦真的比自己生病還難過。</div>
+        <div class="card-actions">
+          <button class="react-btn" onclick="react(this)">🤍 我也有！</button>
+          <span class="react-count">76 人共鳴</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="load-more-wrap">
+      <button class="load-more-btn">翻閱更多碎紙片...</button>
+    </div>
+  </div>
+
+  <footer class="white-footer">
+    <div class="wf-links">
+      <span class="wf-link">隱私權政策</span>
+      <span class="wf-link">匿名條款</span>
+      <span class="wf-link">聯繫我們</span>
+    </div>
+    <div class="wf-copy">© 煩惱盒子 | 匿名傾訴空間</div>
+  </footer>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.pnav button').forEach((b,i) => {
+    b.classList.toggle('active',
+      (id==='landing'&&i===0)||(id==='browse'&&i===4)
+    );
+  });
+  window.scrollTo(0,0);
+}
+function goStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  const btns = document.querySelectorAll('.pnav button');
+  [1,2,3].forEach(i => btns[i].classList.toggle('active', i===n));
+  window.scrollTo(0,0);
+}
+function setFilter(el) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+function react(btn) {
+  btn.classList.toggle('reacted');
+  const countEl = btn.parentElement.querySelector('.react-count');
+  const n = parseInt(countEl.textContent);
+  countEl.textContent = (btn.classList.contains('reacted') ? n+1 : n-1) + ' 人共鳴';
+}
+</script>
+</body>
+</html>

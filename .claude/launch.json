@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".claude/preview"],
+      "port": 4444,
+      "autoPort": true
+    }
+  ]
+}
