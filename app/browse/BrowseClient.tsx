@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import ReactionButton from './ReactionButton'
 
-const CATEGORIES = ['全部', '人際關係', '工作/學業', '科技/工具', '日常生活', '其他'] as const
+const TAGS = ['人際關係', '工作/學業', '科技/工具', '日常生活', '其他'] as const
 const ROTATIONS = [-0.8, 0.6, -1.2, 0.4, -0.5, 1.0, -0.9, 0.7, -0.3, 0.8, -1.1, 0.5]
 
 function timeAgo(dateStr: string): string {
@@ -20,7 +20,7 @@ function timeAgo(dateStr: string): string {
 type Complaint = {
   id: string
   content: string
-  category: string | null
+  category: string[] | null
   created_at: string
   reactionCount: number
 }
@@ -29,7 +29,7 @@ export default function BrowseClient({ complaints }: { complaints: Complaint[] }
   const [active, setActive] = useState<string>('全部')
   const [sortBy, setSortBy] = useState<'latest' | 'top'>('latest')
 
-  const filtered = (active === '全部' ? complaints : complaints.filter(c => c.category === active))
+  const filtered = (active === '全部' ? complaints : complaints.filter(c => c.category?.includes(active)))
     .slice()
     .sort(sortBy === 'top'
       ? (a, b) => b.reactionCount - a.reactionCount
@@ -46,15 +46,15 @@ export default function BrowseClient({ complaints }: { complaints: Complaint[] }
         .sort-tab.active { color: #fff; border-bottom-color: #fff; }
         .sort-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
       `}</style>
-      {/* Category pills — centred on mobile */}
+      {/* Tag pills — centred on mobile */}
       <div className="category-pills" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
-        {CATEGORIES.map(cat => (
+        {(['全部', ...TAGS] as const).map(tag => (
           <button
-            key={cat}
-            className={`filter-pill ${active === cat ? 'active' : ''}`}
-            onClick={() => setActive(cat)}
+            key={tag}
+            className={`filter-pill ${active === tag ? 'active' : ''}`}
+            onClick={() => setActive(tag)}
           >
-            {cat}
+            {tag}
           </button>
         ))}
       </div>

@@ -52,7 +52,7 @@ export default function LandingPage() {
 
             {/* Card 2: Browse */}
             <Link href="/browse" style={{ textDecoration: 'none' }}>
-              <div className="landing-card landing-card-rotated" style={{ position: 'relative', opacity: 0.88 }}>
+              <div className="landing-card" style={{ position: 'relative', opacity: 0.88 }}>
                 {/* Tape on card */}
                 <div className="tape" style={{
                   position: 'absolute', top: -14, left: '50%',

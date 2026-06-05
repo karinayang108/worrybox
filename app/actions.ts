@@ -7,21 +7,22 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const VALID_CATEGORIES = ['人際關係', '工作/學業', '科技/工具', '日常生活', '其他'] as const
 
-async function classifyComplaint(content: string): Promise<string> {
+async function classifyComplaint(content: string): Promise<string[]> {
   try {
     const client = new Anthropic()
     const msg = await client.messages.create({
       model: 'claude-haiku-4-5',
-      max_tokens: 20,
+      max_tokens: 40,
       messages: [{
         role: 'user',
-        content: `以下是一句用戶的煩惱，請從 [人際關係, 工作/學業, 科技/工具, 日常生活, 其他] 中選一個最符合的分類，只回覆分類名稱，不要有其他文字。\n\n煩惱：${content}`,
+        content: `以下是一句用戶的煩惱，請從 [人際關係, 工作/學業, 科技/工具, 日常生活, 其他] 中選出所有符合的分類（可以多選），用逗號分隔，只回覆分類名稱，不要有其他文字。\n\n煩惱：${content}`,
       }],
     })
-    const result = (msg.content[0] as { type: 'text'; text: string }).text.trim()
-    return (VALID_CATEGORIES as readonly string[]).includes(result) ? result : '其他'
+    const raw = (msg.content[0] as { type: 'text'; text: string }).text.trim()
+    const tags = raw.split(',').map(t => t.trim()).filter(t => (VALID_CATEGORIES as readonly string[]).includes(t))
+    return tags.length > 0 ? tags : ['其他']
   } catch {
-    return '其他'
+    return ['其他']
   }
 }
 

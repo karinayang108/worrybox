@@ -22,7 +22,7 @@ async function getComplaints() {
   return complaints.map(c => ({
     id: c.id,
     content: c.content,
-    category: c.category,
+    category: Array.isArray(c.category) ? c.category : c.category ? [c.category] : null,
     created_at: c.created_at,
     reactionCount: (c.reactions as unknown as { count: number }[])[0]?.count ?? 0,
   }))
