@@ -2,8 +2,10 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import NavMenu from '../components/NavMenu'
 import { submitComplaint } from '../actions'
+import TypewriterImage from '../../public/typewriter.png'
 
 type Step = 1 | 2 | 3 | 'done'
 
@@ -273,12 +275,15 @@ export default function SubmitPage() {
               </div>
 
               {/* Typewriter image — pointer-events none so it never blocks the paper */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/typewriter.png"
+              <Image
+                src={TypewriterImage}
                 alt="打字機"
+                width={560}
+                height={560}
+                priority
+                placeholder="blur"
                 style={{
-                  width: 560, position: 'relative', zIndex: 3,
+                  position: 'relative', zIndex: 3,
                   filter: 'drop-shadow(0 12px 28px rgba(0,0,0,0.5))',
                   pointerEvents: 'none',
                 }}
