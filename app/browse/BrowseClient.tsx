@@ -17,12 +17,44 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('zh-TW')
 }
 
+const TRUNCATE_AT = 50
+
 type Complaint = {
   id: string
   content: string
   category: string[] | null
   created_at: string
   reactionCount: number
+}
+
+function WorryText({ content }: { content: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const long = content.length > TRUNCATE_AT
+  const displayed = long && !expanded ? content.slice(0, TRUNCATE_AT) + '…' : content
+  return (
+    <p style={{
+      fontFamily: 'var(--font-sans)',
+      fontSize: 14, color: '#3a2a1e',
+      lineHeight: 1.85, marginBottom: 14, letterSpacing: '0.02em',
+    }}>
+      {displayed}
+      {long && (
+        <button
+          onClick={() => setExpanded(e => !e)}
+          style={{
+            display: 'block', marginTop: 6,
+            background: 'none', border: 'none', padding: 0,
+            fontFamily: 'var(--font-sans)', fontSize: 12,
+            color: '#a08060', cursor: 'pointer',
+            textDecoration: 'underline', textUnderlineOffset: 3,
+            letterSpacing: '0.02em',
+          }}
+        >
+          {expanded ? '收起' : '展開全文'}
+        </button>
+      )}
+    </p>
+  )
 }
 
 export default function BrowseClient({ complaints }: { complaints: Complaint[] }) {
@@ -96,11 +128,7 @@ export default function BrowseClient({ complaints }: { complaints: Complaint[] }
                 #{complaint.id.slice(0, 5).toUpperCase()} — {timeAgo(complaint.created_at)}
               </div>
 
-              <p style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: 14, color: '#3a2a1e',
-                lineHeight: 1.85, marginBottom: 14, letterSpacing: '0.02em',
-              }}>{complaint.content}</p>
+              <WorryText content={complaint.content} />
 
               <ReactionButton
                 complaintId={complaint.id}
